@@ -2,4 +2,9 @@ export * from "./components/layout/top-bar";
 export * from "./components/layout/page-header";
 export * from "./lib/utils";
 export * from "./components/ui/input-text";
-export * from "./components/dashboard";
+export * from "./components/ui/data-table"
+export * from "./components/ui/data-table-pagination"
+export * from "./components/ui/data-table-toolbar"
+export * from "./components/ui/data-table-view-options"
+export * from "./components/ui/data-table-faceted-filter"
+export * from "./components/ui/table"
