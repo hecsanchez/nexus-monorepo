@@ -1,6 +1,6 @@
 import { Bell } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
-import { Button } from "@components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@components/ui/dropdown-menu";
-import { cn } from "@ui/lib/utils";
+} from "../ui/dropdown-menu";
+import { cn } from "../../lib/utils";
 
 export interface TopBarProps {
   className?: string;
