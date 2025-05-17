@@ -28,5 +28,5 @@
       ]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../../apps/admin/src/components/StatsSummaryCard.tsx", "../../apps/admin/src/components/PipelineProgressStepper.tsx", "../../apps/admin/src/components/SolutionsEngineerContactCard.tsx"],
 }
