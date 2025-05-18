@@ -1,4 +1,4 @@
-import { UserRole } from '@schema';
+import { UserRole } from '@prisma/client';
 
 export class CreateUserDto {
   email: string;

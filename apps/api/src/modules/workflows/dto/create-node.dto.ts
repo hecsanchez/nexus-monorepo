@@ -1,4 +1,4 @@
-import { InputJsonValue } from '@schema/runtime/library';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 import { IsString, IsOptional, IsUUID, IsObject } from 'class-validator';
 
 export class CreateNodeDto {

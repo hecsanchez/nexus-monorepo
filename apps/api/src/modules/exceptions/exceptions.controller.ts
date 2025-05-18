@@ -16,7 +16,7 @@ import { UpdateExceptionDto } from './dto/update-exception.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole, ExceptionSeverity, ExceptionStatus } from '@schema';
+import { UserRole, ExceptionSeverity, ExceptionStatus } from '@prisma/client';
 
 @Controller('exceptions')
 @UseGuards(JwtAuthGuard, RolesGuard)

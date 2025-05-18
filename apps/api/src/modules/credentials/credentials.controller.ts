@@ -16,7 +16,7 @@ import { UpdateCredentialDto } from './dto/update-credential.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole, CredentialService } from '@schema';
+import { UserRole, CredentialService } from '@prisma/client';
 
 @Controller('credentials')
 @UseGuards(JwtAuthGuard, RolesGuard)

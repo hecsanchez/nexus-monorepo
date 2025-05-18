@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsEnum,
 } from 'class-validator';
-import { InvoiceStatus } from '@schema';
+import { InvoiceStatus } from '@prisma/client';
 
 export class CreateInvoiceDto {
   @IsUUID()

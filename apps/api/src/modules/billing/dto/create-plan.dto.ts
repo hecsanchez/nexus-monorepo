@@ -7,7 +7,7 @@ import {
   IsUrl,
   Max,
 } from 'class-validator';
-import { PlanCadence } from '@schema';
+import { PlanCadence } from '@prisma/client';
 
 export class CreatePlanDto {
   @IsString()

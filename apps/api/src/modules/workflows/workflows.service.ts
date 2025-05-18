@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Workflow, Node, ExecutionLog } from '@schema';
+import { Workflow, Node, ExecutionLog } from '@prisma/client';
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
 import { UpdateWorkflowDto } from './dto/update-workflow.dto';
 import { CreateNodeDto } from './dto/create-node.dto';

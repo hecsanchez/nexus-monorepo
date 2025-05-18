@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Plan, Subscription, Invoice, InvoiceStatus } from '@schema';
+import { Plan, Subscription, Invoice, InvoiceStatus } from '@prisma/client';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';

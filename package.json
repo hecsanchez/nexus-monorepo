@@ -5,12 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "predev": "node ./scripts/load-config.js",
     "dev": "pnpm --parallel -r --filter \"./apps/**\" run dev",
     "dev:api": "pnpm --filter api run dev",
     "dev:client": "pnpm --filter client run dev",
-    "dev:admin": "pnpm --filter admin run dev"
+    "dev:admin": "pnpm --filter admin run dev",
+    "db:migrate": "cd apps/api && pnpm prisma migrate dev",
+    "db:studio": "cd apps/api && pnpm prisma studio"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.4.5"
+  }
 }

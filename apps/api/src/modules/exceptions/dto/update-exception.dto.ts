@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { ExceptionSeverity, ExceptionStatus } from '@schema';
+import { ExceptionSeverity, ExceptionStatus } from '@prisma/client';
 
 export class UpdateExceptionDto {
   @IsString()

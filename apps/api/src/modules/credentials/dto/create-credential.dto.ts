@@ -1,6 +1,6 @@
 import { IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
-import { CredentialService, CredentialStatus } from '@schema';
-import { InputJsonValue } from '@schema/runtime/library';
+import { CredentialService, CredentialStatus } from '@prisma/client';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 
 export class CreateCredentialDto {
   @IsString()

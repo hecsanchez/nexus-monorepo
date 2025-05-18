@@ -12,40 +12,6 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router";
 import Layout from "../components/Layout";
 
-// Mock data for summary cards
-const summaryStats = [
-  {
-    label: "Total Workflows",
-    value: 2847,
-    icon: <MdBusiness />,
-    percentageChange: 12,
-  },
-  {
-    label: "Total Exceptions",
-    value: 156,
-    icon: <MdReportProblem />,
-    percentageChange: -8,
-  },
-  {
-    label: "Time Saved",
-    value: "1,284h",
-    icon: <MdAccessTime />,
-    percentageChange: 24,
-  },
-  {
-    label: "Revenue",
-    value: "$847K",
-    icon: <MdAttachMoney />,
-    percentageChange: 16,
-  },
-  {
-    label: "Active Clients",
-    value: 128,
-    icon: <MdPeople />,
-    percentageChange: 5,
-  },
-];
-
 // Mock data for clients table
 const clients = [
   {
@@ -84,6 +50,43 @@ const columns: ColumnDef<Client, unknown>[] = [
 ];
 
 const Dashboard = () => {
+  const { data, isLoading, isError } = useApiQuery('dashboard-summary', '/dashboard/summary');
+
+  const summaryStats = data
+    ? [
+        {
+          label: 'Total Workflows',
+          value: data.totalWorkflows,
+          icon: <MdBusiness />,
+          percentageChange: 0,
+        },
+        {
+          label: 'Total Exceptions',
+          value: data.totalExceptions,
+          icon: <MdReportProblem />,
+          percentageChange: 0,
+        },
+        {
+          label: 'Time Saved',
+          value: `${data.timeSaved}h`,
+          icon: <MdAccessTime />,
+          percentageChange: 0,
+        },
+        {
+          label: 'Revenue',
+          value: `$${(data.revenue / 1000).toLocaleString()}K`,
+          icon: <MdAttachMoney />,
+          percentageChange: 0,
+        },
+        {
+          label: 'Active Clients',
+          value: data.activeClients,
+          icon: <MdPeople />,
+          percentageChange: 0,
+        },
+      ]
+    : [];
+
   return (
     <Layout>
           <PageHeader

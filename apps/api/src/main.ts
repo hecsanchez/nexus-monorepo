@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useLogger(['debug', 'error', 'log', 'verbose', 'warn']);
 
   app.enableCors({
-    origin: process.env.APP_URL,
+    origin: [process.env.CLIENT_URL, process.env.ADMIN_URL],
     credentials: true,
   });
 
@@ -20,6 +20,6 @@ async function bootstrap() {
 
   app.useBodyParser('json', { limit: '50mb' });
 
-  await app.listen(3000);
+  await app.listen(process.env.API_PORT);
 }
 bootstrap();

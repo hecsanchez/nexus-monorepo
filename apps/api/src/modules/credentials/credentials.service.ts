@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Credential, CredentialService, CredentialStatus } from '@schema';
+import { Credential, CredentialService, CredentialStatus } from '@prisma/client';
 import { CreateCredentialDto } from './dto/create-credential.dto';
 import { UpdateCredentialDto } from './dto/update-credential.dto';
 

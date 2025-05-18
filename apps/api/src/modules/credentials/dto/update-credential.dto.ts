@@ -1,6 +1,6 @@
 import { IsEnum, IsObject, IsOptional } from 'class-validator';
-import { CredentialStatus } from '@schema';
-import { InputJsonValue } from '@schema/runtime/library';
+import { CredentialStatus } from '@prisma/client';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 
 export class UpdateCredentialDto {
   @IsEnum(CredentialStatus)

@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Exception, ExceptionSeverity, ExceptionStatus } from '@schema';
+import { Exception, ExceptionSeverity, ExceptionStatus } from '@prisma/client';
 import { CreateExceptionDto } from './dto/create-exception.dto';
 import { UpdateExceptionDto } from './dto/update-exception.dto';
 

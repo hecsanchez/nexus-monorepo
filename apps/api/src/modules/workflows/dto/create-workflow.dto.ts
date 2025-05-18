@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsUUID, IsEnum } from 'class-validator';
-import { WorkflowStatus } from '@schema';
+import { WorkflowStatus } from '@prisma/client';
 
 export class CreateWorkflowDto {
   @IsString()
