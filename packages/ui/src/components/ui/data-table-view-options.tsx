@@ -1,13 +1,12 @@
 "use client"
 
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { Table } from "@tanstack/react-table"
+import { DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { type Table } from "@tanstack/react-table"
 import { Settings2 } from "lucide-react"
 
 import { Button } from "./button"
-import {
+import {  
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
