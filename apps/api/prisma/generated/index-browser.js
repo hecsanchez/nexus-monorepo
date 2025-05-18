@@ -235,7 +235,16 @@ exports.Prisma.InvoiceScalarFieldEnum = {
   dueDate: 'dueDate',
   amount: 'amount',
   status: 'status',
-  paymentMethod: 'paymentMethod'
+  paymentMethod: 'paymentMethod',
+  description: 'description'
+};
+
+exports.Prisma.UsageLogScalarFieldEnum = {
+  id: 'id',
+  subscriptionId: 'subscriptionId',
+  credits: 'credits',
+  description: 'description',
+  timestamp: 'timestamp'
 };
 
 exports.Prisma.DocumentLinkScalarFieldEnum = {
@@ -346,6 +355,7 @@ exports.Prisma.ModelName = {
   Plan: 'Plan',
   Subscription: 'Subscription',
   Invoice: 'Invoice',
+  UsageLog: 'UsageLog',
   DocumentLink: 'DocumentLink'
 };
 

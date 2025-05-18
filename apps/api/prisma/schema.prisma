@@ -256,6 +256,7 @@ model Subscription {
   
   // Relations
   invoices     Invoice[]
+  usageLogs    UsageLog[]
 
   @@map("subscriptions")
 }
@@ -269,8 +270,20 @@ model Invoice {
   amount         Float
   status         InvoiceStatus @default(DRAFT)
   paymentMethod  String?
+  description    String?       // Add description field for overage charges
 
   @@map("invoices")
+}
+
+model UsageLog {
+  id             String       @id @default(uuid())
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  credits        Int
+  description    String
+  timestamp      DateTime     @default(now())
+
+  @@map("usage_logs")
 }
 
 model DocumentLink {
