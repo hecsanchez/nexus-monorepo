@@ -17,7 +17,7 @@ const SolutionsEngineerContactCard = React.forwardRef<HTMLDivElement, SolutionsE
       <div
         ref={ref}
         className={cn(
-          "flex items-center gap-4 rounded-lg border bg-card p-4 shadow-sm min-w-[260px]",
+          "flex items-center gap-4 rounded-lg border bg-card p-4 min-w-[260px]",
           className
         )}
         {...props}

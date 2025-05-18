@@ -20,6 +20,6 @@ async function bootstrap() {
 
   app.useBodyParser('json', { limit: '50mb' });
 
-  await app.listen(process.env.API_PORT);
+  await app.listen(process.env.API_PORT || 3000);
 }
 bootstrap();

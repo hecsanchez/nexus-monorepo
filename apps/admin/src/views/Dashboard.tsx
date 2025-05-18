@@ -1,16 +1,9 @@
-import { TopBar, PageHeader } from "@nexus/ui";
 import { StatsSummaryCard } from "../components/StatsSummaryCard";
 import { Button, Card, CardContent, DataTable } from "@nexus/ui";
-import {
-  MdBusiness,
-  MdReportProblem,
-  MdAccessTime,
-  MdAttachMoney,
-  MdPeople,
-} from "react-icons/md";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router";
 import Layout from "../components/Layout";
+import { useApiQuery } from "@/hooks/useApi";
 
 // Mock data for clients table
 const clients = [
@@ -26,6 +19,14 @@ const clients = [
     moneySaved: "$42,600",
   },
 ];
+
+type DashboardSummary = {
+  totalWorkflows: number;
+  totalExceptions: number;
+  timeSaved: number;
+  revenue: number;
+  activeClients: number;
+};
 
 type Client = (typeof clients)[number];
 
@@ -50,76 +51,75 @@ const columns: ColumnDef<Client, unknown>[] = [
 ];
 
 const Dashboard = () => {
-  const { data, isLoading, isError } = useApiQuery('dashboard-summary', '/dashboard/summary');
+  const { data, isLoading, isError } = useApiQuery<DashboardSummary>(
+    "dashboard-summary",
+    "/dashboard/summary"
+  );
+
+  const {
+    data: clientsData,
+    isLoading: clientsLoading,
+    isError: clientsError,
+  } = useApiQuery<Client[]>("clients", "/clients");
 
   const summaryStats = data
     ? [
         {
-          label: 'Total Workflows',
+          label: "Total Workflows",
           value: data.totalWorkflows,
-          icon: <MdBusiness />,
           percentageChange: 0,
         },
         {
-          label: 'Total Exceptions',
+          label: "Total Exceptions",
           value: data.totalExceptions,
-          icon: <MdReportProblem />,
           percentageChange: 0,
         },
         {
-          label: 'Time Saved',
+          label: "Time Saved",
           value: `${data.timeSaved}h`,
-          icon: <MdAccessTime />,
           percentageChange: 0,
         },
         {
-          label: 'Revenue',
+          label: "Revenue",
           value: `$${(data.revenue / 1000).toLocaleString()}K`,
-          icon: <MdAttachMoney />,
           percentageChange: 0,
         },
         {
-          label: 'Active Clients',
+          label: "Active Clients",
           value: data.activeClients,
-          icon: <MdPeople />,
           percentageChange: 0,
         },
       ]
     : [];
 
   return (
-    <Layout>
-          <PageHeader
-            title="Dashboard Overview"
-            description="Overview of your workflows, clients, and key metrics."
-          >
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline">Last 7 days</Button>
-              <Button variant="outline">Last 30 days</Button>
-              <Button variant="outline">MTD</Button>
-              <Button variant="outline">QTD</Button>
-              <Button variant="outline">YTD</Button>
-              <Button variant="default">ITD</Button>
-            </div>
-          </PageHeader>
+    <Layout title="Dashboard Overview">
+      <div className="flex gap-2 flex-wrap">
+        <Button variant="outline">Last 7 days</Button>
+        <Button variant="outline">Last 30 days</Button>
+        <Button variant="outline">MTD</Button>
+        <Button variant="outline">QTD</Button>
+        <Button variant="outline">YTD</Button>
+        <Button variant="default">ITD</Button>
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {summaryStats.map((stat) => (
-              <StatsSummaryCard key={stat.label} {...stat} />
-            ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {summaryStats.map((stat) => (
+          <StatsSummaryCard key={stat.label} {...stat} />
+        ))}
+      </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">All Clients</h2>
+            <Link to="/clients/new">
+              <Button>+ Add Client</Button>
+            </Link>
           </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">All Clients</h2>
-                <Link to="/clients/new">
-                  <Button>+ Add Client</Button>
-                </Link>
-              </div>
-              <DataTable columns={columns} data={clients} />
-            </CardContent>
-          </Card>
+          <DataTable columns={columns} data={clientsData ?? []} />
+        </CardContent>
+      </Card>
     </Layout>
   );
 };

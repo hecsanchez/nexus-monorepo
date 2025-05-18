@@ -85,7 +85,7 @@ model User {
 
   // Relations
   client   Client? @relation(fields: [clientId], references: [id])
-  clientId String?
+  clientId String? @unique
 
   // Many-to-many relation with Client for SEs
   assignedClients ClientsOnSEs[]
@@ -105,7 +105,7 @@ model Client {
   createdAt     DateTime  @default(now())
 
   // Relations
-  users       User[]
+  user        User?
   departments Department[]
   workflows   Workflow[]
   credentials Credential[]

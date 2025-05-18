@@ -33,7 +33,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sid: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email };
     const accessToken = await this.jwtService.signAsync(payload, {
       expiresIn: '1d',
     });

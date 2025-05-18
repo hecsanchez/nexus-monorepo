@@ -26,7 +26,6 @@ module.exports = {
     auth: {
       jwtSecret: process.env.JWT_SECRET,
       jwtExpiration: process.env.JWT_EXPIRATION,
-      jwtRefreshExpiration: process.env.JWT_REFRESH_EXPIRATION
     },
     app: {
       nodeEnv: process.env.NODE_ENV || 'development',
@@ -41,7 +40,7 @@ module.exports = {
   },
   admin: {
     app: {
-      apiUrl: process.env.ADMIN_API_URL
+      apiUrl: process.env.VITE_API_URL
     },
     vite: {
       port: process.env.ADMIN_PORT || 5174
@@ -49,7 +48,7 @@ module.exports = {
   },
   client: {
     app: {
-      apiUrl: process.env.CLIENT_API_URL
+      apiUrl: process.env.VITE_API_URL
     },
     vite: {
       port: process.env.CLIENT_PORT || 5173

@@ -12,6 +12,7 @@ import {
 import { cn } from "../../lib/utils";
 
 export interface TopBarProps {
+  title?: string;
   className?: string;
   user?: {
     name: string;
@@ -24,6 +25,7 @@ export interface TopBarProps {
 }
 
 export function TopBar({
+  title,
   className,
   user,
   onNotificationClick,
@@ -41,12 +43,12 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "flex h-16 items-center justify-between border-b px-4 lg:px-6",
+        "flex min-h-20 items-center justify-between border-b px-4 lg:px-6",
         className
       )}
     >
       <div className="flex items-center gap-4">
-        {/* Left side content can be added here */}
+        <h1 className="text-2xl font-bold">{title}</h1>
       </div>
 
       <div className="flex items-center gap-4">

@@ -4,13 +4,12 @@ import { cn } from "../../../../packages/ui/src/lib/utils";
 export interface StatsSummaryCardProps extends React.HTMLAttributes<HTMLDivElement> {
   label: string;
   value: string | number;
-  icon?: React.ReactNode;
   percentageChange?: number; // positive or negative
   className?: string;
 }
 
 const StatsSummaryCard = React.forwardRef<HTMLDivElement, StatsSummaryCardProps>(
-  ({ label, value, icon, percentageChange, className, ...props }, ref) => {
+  ({ label, value, percentageChange, className, ...props }, ref) => {
     const isPositive = percentageChange !== undefined && percentageChange >= 0;
     const isNegative = percentageChange !== undefined && percentageChange < 0;
     return (
@@ -23,7 +22,6 @@ const StatsSummaryCard = React.forwardRef<HTMLDivElement, StatsSummaryCardProps>
         {...props}
       >
         <div className="flex items-center gap-2">
-          {icon && <span className="text-xl text-muted-foreground">{icon}</span>}
           <span className="text-xs font-medium text-muted-foreground">{label}</span>
         </div>
         <div className="flex items-end justify-between mt-2">

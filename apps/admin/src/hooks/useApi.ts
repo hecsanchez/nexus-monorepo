@@ -1,73 +1,81 @@
 import {
-    useQuery,
-    useMutation,
-    type UseQueryOptions,
-    type UseMutationOptions,
-  } from '@tanstack/react-query';
-  import axios from 'axios';
-  
-  const API_URL = import.meta.env.VITE_API_URL;
-  
-  const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true,
+  useQuery,
+  useMutation,
+  type UseQueryOptions,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
+console.log("VITE_API_URL:", API_URL);
+
+const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
+
+export function useApiQuery<T>(
+  queryKey: string | string[],
+  url: string,
+  options?: UseQueryOptions<T>
+) {
+  return useQuery({
+    queryKey: Array.isArray(queryKey) ? queryKey : [queryKey],
+    queryFn: async () => {
+      const { data } = await api.get<T>(url);
+      return data;
+    },
+    ...options,
   });
-  
-  export function useApiQuery<T>(
-    key: string | string[],
-    url: string,
-    options?: UseQueryOptions<T>,
-  ) {
-    return useQuery<T>(
-      key,
-      async () => {
-        const { data } = await api.get<T>(url);
-        return data;
-      },
-      options,
-    );
-  }
-  
-  export function useApiMutation<T, S>(
-    url: string,
-    method: 'post' | 'put' | 'patch' | 'delete' = 'post',
-    options?: UseMutationOptions<T, unknown, S>,
-  ) {
-    return useMutation<T, unknown, S>(async (variables) => {
+}
+
+export function useApiMutation<TResponse, TVariables>(
+  url: string,
+  method: "post" | "put" | "patch" | "delete" = "post",
+  options?: UseMutationOptions<TResponse, unknown, TVariables>
+) {
+  return useMutation({
+    mutationFn: async (variables: TVariables) => {
       let finalUrl = url;
-      let payload: any = variables;
-  
-      // Check if the URL contains a placeholder (e.g., :sid)
-      if (url.includes(':')) {
-        const urlParts = url.split('/');
-        const variableParts = Object.entries(variables as Record<string, any>);
-  
+      let payload: TVariables | undefined = variables;
+
+      // Handle URL placeholders (e.g., /users/:id)
+      if (url.includes(":")) {
+        const urlParts = url.split("/");
+        const variableParts = Object.entries(
+          variables as Record<string, unknown>
+        );
+
         finalUrl = urlParts
           .map((part) => {
-            if (part.startsWith(':')) {
+            if (part.startsWith(":")) {
               const key = part.slice(1);
-              const [foundKey, value] =
-                variableParts.find(([k]) => k === key) || [];
-              if (foundKey) {
-                delete payload[foundKey];
-                return value;
+              const found = variableParts.find(([k]) => k === key);
+              if (found) {
+                delete (payload as Record<string, unknown>)[found[0]];
+                return found[1];
               }
             }
             return part;
           })
-          .join('/');
+          .join("/");
       } else if (
-        method === 'delete' ||
+        method === "delete" ||
         (variables !== null &&
-          typeof variables === 'object' &&
-          'sid' in variables)
+          typeof variables === "object" &&
+          "sid" in (variables as object))
       ) {
         finalUrl = `${url}/${(variables as any).sid}`;
-        payload = undefined as unknown as S; // DELETE requests typically don't have a body
+        payload = undefined;
       }
-  
-      const { data } = await api[method]<T>(finalUrl, payload);
+
+      const { data } = await api.request<TResponse>({
+        url: finalUrl,
+        method,
+        data: payload,
+      });
       return data;
-    }, options);
-  }
-  
+    },
+    ...options,
+  });
+}

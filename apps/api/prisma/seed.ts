@@ -10,10 +10,15 @@ import {
   PlanCadence,
   DocumentType,
 } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Hash the password for the seed user
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash('P@ssword123', saltRounds);
+
   // 1. Create a Plan
   const plan = await prisma.plan.create({
     data: {
@@ -31,15 +36,13 @@ async function main() {
       url: 'https://acme.com',
       contractStart: new Date('2025-01-15'),
       active: true,
-      users: {
-        create: [
-          {
-            name: 'Jane Doe',
-            email: 'jane@acme.com',
-            role: UserRole.CLIENT,
-            password: 'test',
-          },
-        ],
+      user: {
+        create: {
+          name: 'Jane Doe',
+          email: 'jane@acme.com',
+          role: UserRole.CLIENT,
+          password: hashedPassword,
+        },
       },
       subscriptions: {
         create: [
@@ -79,7 +82,7 @@ async function main() {
       },
     },
     include: {
-      users: true,
+      user: true,
       subscriptions: true,
       credentials: true,
       documents: true,
@@ -143,14 +146,10 @@ async function main() {
       departmentId: department.id,
       clientId: client.id,
       nodes: {
-        create: [
-          { name: 'Sync', type: 'syncer' },
-        ],
+        create: [{ name: 'Sync', type: 'syncer' }],
       },
       logs: {
-        create: [
-          { status: 'SUCCESS', timestamp: new Date('2025-05-16') },
-        ],
+        create: [{ status: 'SUCCESS', timestamp: new Date('2025-05-16') }],
       },
       exceptions: {
         create: [

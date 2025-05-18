@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
 
 const sidebarVariants = cva(
-  "flex h-full w-[280px] flex-col border-r bg-sidebar text-sidebar-foreground",
+  "flex h-full w-64 flex-col border-r bg-sidebar text-sidebar-foreground",
   {
     variants: {
       variant: {
@@ -22,13 +22,16 @@ export interface NavItem {
   href: string;
   icon: React.ReactNode;
   badge?: string | number;
+  bgColor?: string;
 }
 
 export interface SidebarNavigationProps extends VariantProps<typeof sidebarVariants> {
   className?: string;
   items?: NavItem[];
   footer?: ReactNode;
+  currentRoute?: string;
   onNavItemClick?: (item: NavItem) => void;
+  logoComponent: ReactNode;
 }
 
 export function SidebarNavigation({
@@ -36,12 +39,22 @@ export function SidebarNavigation({
   variant,
   items = [],
   footer,
+  currentRoute = "",
   onNavItemClick,
+  logoComponent,
 }: SidebarNavigationProps) {
+  const currentNavItem = items.find(item => item.href === currentRoute);
+  const currentRouteColor = currentNavItem?.bgColor || "bg-gray-50 dark:bg-gray-950";
+
   return (
-    <nav className={cn(sidebarVariants({ variant }), className)}>
-      <div className="flex h-14 items-center border-b border-sidebar-border px-4">
-        <span className="text-lg font-semibold">Nexus Admin</span>
+    <nav className={cn(
+      sidebarVariants({ variant }), 
+      "transition-colors duration-700",
+      currentRouteColor,
+      className
+    )}>
+      <div className="flex h-20 items-center px-4">
+        {logoComponent}
       </div>
       
       <div className="flex-1 overflow-auto py-2">

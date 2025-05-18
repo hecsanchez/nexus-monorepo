@@ -24,17 +24,62 @@ export class ClientsService {
     });
   }
 
-  async findAll(): Promise<Client[]> {
-    return this.prisma.client.findMany({
-      include: {
-        users: true,
-        departments: true,
-        assignedSEs: {
-          include: {
-            se: true,
+  async findAll(): Promise<any[]> {
+    const clients = await this.prisma.client.findMany({
+      select: {
+        id: true,
+        url: true,
+        contractStart: true,
+        user: { select: { name: true } },
+        workflows: {
+          select: {
+            id: true,
+            nodes: true,
+            logs: true,
+            exceptions: true,
+            moneySavedPerExecution: true,
+            timeSavedPerExecution: true,
           },
         },
       },
+    });
+
+    // Map and aggregate for the frontend
+    return clients.map((client) => {
+      const workflowsCount = client.workflows.length;
+      const nodesCount = client.workflows.reduce(
+        (sum, wf) => sum + (wf.nodes?.length || 0),
+        0,
+      );
+      const executionsCount = client.workflows.reduce(
+        (sum, wf) => sum + (wf.logs?.length || 0),
+        0,
+      );
+      const exceptionsCount = client.workflows.reduce(
+        (sum, wf) => sum + (wf.exceptions?.length || 0),
+        0,
+      );
+      const revenue = 24500; // Replace with your logic
+      const timeSaved = client.workflows.reduce(
+        (sum, wf) => sum + (wf.timeSavedPerExecution || 0),
+        0,
+      );
+      const moneySaved = client.workflows.reduce(
+        (sum, wf) => sum + (wf.moneySavedPerExecution || 0),
+        0,
+      );
+
+      return {
+        name: client.user?.name || 'N/A',
+        contractStart: client.contractStart,
+        workflows: workflowsCount,
+        nodes: nodesCount,
+        executions: executionsCount,
+        exceptions: exceptionsCount,
+        revenue: `$${revenue.toLocaleString()}`,
+        timeSaved: `${timeSaved}h`,
+        moneySaved: `$${moneySaved.toLocaleString()}`,
+      };
     });
   }
 
@@ -42,7 +87,7 @@ export class ClientsService {
     const client = await this.prisma.client.findUnique({
       where: { id },
       include: {
-        users: true,
+        user: true,
         departments: true,
         workflows: {
           include: {

@@ -52,6 +52,7 @@ export default defineConfig({
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
+          "react-router-dom": "ReactRouterDOM",
           clsx: "clsx",
           "tailwind-merge": "tailwindMerge",
           "@radix-ui/react-avatar": "RadixAvatar",

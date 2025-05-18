@@ -13,67 +13,79 @@ import PlanManagerTab from "./views/billing/PlanManagerTab";
 import InvoiceManagerTab from "./views/billing/InvoiceManagerTab";
 import ApplyCreditsTab from "./views/billing/ApplyCreditsTab";
 import Users from "./views/Users";
+import Login from "./views/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
     {
+      path: "/login",
+      element: <Login />,
+    },
+    {
       path: "/",
-      element: <Dashboard />,
-    },
-    {
-      path: "/clients/new",
-      element: <NewClient />,
-    },
-    {
-      path: "/clients",
-      element: <ClientManager />,
+      element: <ProtectedRoute />,
       children: [
         {
-          element: <ClientOverview />,
+          element: <Dashboard />,
           index: true,
         },
         {
-          path: "workflows",
-          element: <ClientWorkflows />,
+          path: "/clients/new",
+          element: <NewClient />,
+        },
+        {
+          path: "/clients",
+          element: <ClientManager />,
+          children: [
+            {
+              element: <ClientOverview />,
+              index: true,
+            },
+            {
+              path: "workflows",
+              element: <ClientWorkflows />,
+            },
+          ],
+        },
+        {
+          path: "/billing",
+          element: <Billing />,
+          children: [
+            {
+              path: "plan",
+              element: <PlanManagerTab />,
+            },
+            {
+              path: "invoices",
+              element: <InvoiceManagerTab />,
+            },
+            {
+              path: "credits",
+              element: <ApplyCreditsTab />,
+            },
+          ],
+        },
+        {
+          path: "/subscriptions",
+          element: <PlanManager />,
+        },
+        {
+          path: "/subscriptions/new",
+          element: <NewPlan />,
+        },
+        {
+          path: "/credentials",
+          element: <Credentials />,
+        },
+        {
+          path: "/exceptions",
+          element: <Exceptions />,
+        },
+        {
+          path: "/users",
+          element: <Users />,
         },
       ],
-    },
-    {
-      path: "/billing",
-      element: <Billing />,
-      children: [
-        {
-          path: "plan",
-          element: <PlanManagerTab />,
-        },
-        {
-          path: "invoices",
-          element: <InvoiceManagerTab />,
-        },
-        {
-          path: "credits",
-          element: <ApplyCreditsTab />,
-        },
-      ],
-    },
-    {
-      path: "/subscriptions",
-      element: <PlanManager />,
-    },
-    {
-      path: "/subscriptions/new",
-      element: <NewPlan />,
-    },
-    {
-      path: "/credentials",
-      element: <Credentials />,
-    },
-    {
-      path: "/exceptions",
-      element: <Exceptions />,
-    },
-    {
-      path: "/users",
-      element: <Users />,
     },
   ]);
 
