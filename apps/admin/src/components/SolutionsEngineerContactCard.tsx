@@ -6,12 +6,13 @@ export interface SolutionsEngineerContactCardProps extends React.HTMLAttributes<
   avatar?: React.ReactNode | string; // ReactNode or image URL
   email: string;
   phone?: string;
+  role?: string;
   onChat?: () => void;
   className?: string;
 }
 
 const SolutionsEngineerContactCard = React.forwardRef<HTMLDivElement, SolutionsEngineerContactCardProps>(
-  ({ name, avatar, email, phone, onChat, className, ...props }, ref) => {
+  ({ name, avatar, email, phone, role, onChat, className, ...props }, ref) => {
     return (
       <div
         ref={ref}
@@ -38,6 +39,7 @@ const SolutionsEngineerContactCard = React.forwardRef<HTMLDivElement, SolutionsE
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-foreground truncate">{name}</div>
+          {role && <div className="text-xs text-muted-foreground truncate">{role}</div>}
           <div className="text-xs text-muted-foreground truncate">{email}</div>
           {phone && <div className="text-xs text-muted-foreground truncate">{phone}</div>}
         </div>

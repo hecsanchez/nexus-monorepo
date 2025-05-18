@@ -8,12 +8,14 @@ import {
   MdChat,
   MdPieChart,
   MdReportProblem,
+  MdSecurity,
 } from "react-icons/md";
+import { useNavigate } from "react-router";
 
 const navItems: NavItem[] = [
   {
     title: "Dashboard",
-    href: "/dashboard",
+    href: "/",
     icon: <MdDashboard size={24} />,
   },
   {
@@ -25,6 +27,11 @@ const navItems: NavItem[] = [
     title: "Clients",
     href: "/clients",
     icon: <MdBusiness size={24} />,
+  },
+  {
+    title: "Credentials",
+    href: "/credentials",
+    icon: <MdSecurity size={24} />,
   },
   {
     title: "Billing",
@@ -54,7 +61,15 @@ const navItems: NavItem[] = [
 ];
 
 const Sidebar = () => {
-  return <SidebarNavigation items={navItems} />;
+  const navigate = useNavigate();
+
+  const handleNavItemClick = (item: NavItem) => {
+    navigate(item.href);
+  };
+
+  return (
+    <SidebarNavigation items={navItems} onNavItemClick={handleNavItemClick} />
+  );
 };
 
 export default Sidebar;
