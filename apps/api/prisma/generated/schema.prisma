@@ -1,0 +1,285 @@
+// Prisma schema for Braintrust Nexus platform
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "generated"
+  binaryTargets = ["native", "darwin-arm64", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SE
+  CLIENT
+}
+
+enum PlanCadence {
+  MONTHLY
+  QUARTERLY
+  ANNUALLY
+}
+
+enum ExceptionSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum WorkflowStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+}
+
+enum ExceptionStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum CredentialService {
+  SLACK
+  GITHUB
+  SALESFORCE
+  JIRA
+  AWS
+}
+
+enum CredentialStatus {
+  CONNECTED
+  DISCONNECTED
+  EXPIRED
+  INVALID
+}
+
+enum DocumentType {
+  SURVEY
+  ADA_PROPOSAL
+  CONTRACT
+  OTHER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  role      UserRole
+  password  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  client   Client? @relation(fields: [clientId], references: [id])
+  clientId String?
+
+  // Many-to-many relation with Client for SEs
+  assignedClients ClientsOnSEs[]
+
+  // Notifications for exceptions
+  notifiedExceptions Exception[]
+
+  @@map("users")
+}
+
+model Client {
+  id            String    @id @default(uuid())
+  url           String?
+  contractStart DateTime?
+  contractEnd   DateTime?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
+  // Relations
+  users       User[]
+  departments Department[]
+  workflows   Workflow[]
+  credentials Credential[]
+  documents   DocumentLink[]
+
+  // Many-to-many relation with User for SEs
+  assignedSEs ClientsOnSEs[]
+
+  // Subscription relation
+  subscriptions Subscription[]
+
+  @@map("clients")
+}
+
+model ClientsOnSEs {
+  client     Client   @relation(fields: [clientId], references: [id])
+  clientId   String
+  se         User     @relation(fields: [seId], references: [id])
+  seId       String
+  assignedAt DateTime @default(now())
+
+  @@id([clientId, seId])
+  @@map("clients_on_ses")
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  workflows Workflow[]
+
+  @@map("departments")
+}
+
+model Workflow {
+  id           String         @id @default(uuid())
+  name         String
+  description  String?
+  department   Department     @relation(fields: [departmentId], references: [id])
+  departmentId String
+  client       Client         @relation(fields: [clientId], references: [id])
+  clientId     String
+  active       Boolean        @default(true)
+  status       WorkflowStatus @default(ACTIVE)
+  createdAt    DateTime       @default(now())
+
+  // Relations
+  nodes      Node[]
+  logs       ExecutionLog[]
+  exceptions Exception[]
+
+  @@map("workflows")
+}
+
+model Node {
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  config     Json?
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflowId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  logs ExecutionLog[]
+
+  @@map("nodes")
+}
+
+model ExecutionLog {
+  id          String     @id @default(uuid())
+  workflow    Workflow   @relation(fields: [workflowId], references: [id])
+  workflowId  String
+  node        Node?      @relation(fields: [nodeId], references: [id])
+  nodeId      String?
+  status      String
+  timestamp   DateTime   @default(now())
+  log         String?
+  exception   Exception? @relation(fields: [exceptionId], references: [id])
+  exceptionId String?
+
+  @@map("execution_logs")
+}
+
+model Exception {
+  id         String            @id @default(uuid())
+  workflow   Workflow          @relation(fields: [workflowId], references: [id])
+  workflowId String
+  type       String
+  severity   ExceptionSeverity
+  remedy     String?
+  status     ExceptionStatus   @default(OPEN)
+  timestamp  DateTime          @default(now())
+
+  // Relations
+  notifiedUsers User[]
+  logs          ExecutionLog[]
+
+  @@map("exceptions")
+}
+
+model Credential {
+  id        String            @id @default(uuid())
+  client    Client            @relation(fields: [clientId], references: [id])
+  clientId  String
+  service   CredentialService
+  status    CredentialStatus  @default(DISCONNECTED)
+  config    Json?
+  createdAt DateTime          @default(now())
+
+  @@map("credentials")
+}
+
+model Plan {
+  id                   String      @id @default(uuid())
+  name                 String
+  description          String?
+  pricePerCredit       Float
+  contractLength       Int // in months
+  cadence              PlanCadence
+  setupFee             Float?
+  cap                  Int? // max credits
+  overageCost          Float?
+  usageApi             String?
+  creditsPerPeriod     Int?
+  prepaymentPercentage Float?
+
+  // Relations
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id           String    @id @default(uuid())
+  client       Client    @relation(fields: [clientId], references: [id])
+  clientId     String
+  plan         Plan      @relation(fields: [planId], references: [id])
+  planId       String
+  status       String
+  createdAt    DateTime  @default(now())
+  billedToDate DateTime?
+
+  // Relations
+  invoices Invoice[]
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  subscription   Subscription  @relation(fields: [subscriptionId], references: [id])
+  subscriptionId String
+  issueDate      DateTime
+  dueDate        DateTime
+  amount         Float
+  status         InvoiceStatus @default(DRAFT)
+  paymentMethod  String?
+
+  @@map("invoices")
+}
+
+model DocumentLink {
+  id        String       @id @default(uuid())
+  client    Client       @relation(fields: [clientId], references: [id])
+  clientId  String
+  type      DocumentType
+  url       String
+  createdAt DateTime     @default(now())
+
+  @@map("document_links")
+}
