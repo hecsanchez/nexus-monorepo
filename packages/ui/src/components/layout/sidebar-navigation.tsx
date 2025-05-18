@@ -43,7 +43,15 @@ export function SidebarNavigation({
   onNavItemClick,
   logoComponent,
 }: SidebarNavigationProps) {
-  const currentNavItem = items.find(item => item.href === currentRoute);
+  // Enhance regex to match any /clients/:sid subroute
+  const isClientSubroute =
+    /^\/clients\/[^/]+(\/.*)?$/.test(currentRoute);
+
+  // If on a client subroute, use the /clients nav item color
+  const clientsNavItem = items.find(item => item.href === '/clients');
+  const currentNavItem = isClientSubroute
+    ? clientsNavItem
+    : items.find(item => item.href === currentRoute);
   const currentRouteColor = currentNavItem?.bgColor || "bg-gray-50 dark:bg-gray-950";
 
   return (
@@ -60,6 +68,9 @@ export function SidebarNavigation({
       <div className="flex-1 overflow-auto py-2">
         <div className="space-y-1 px-2">
           {items.map((item) => {
+            const isActive =
+              (isClientSubroute && item.href === '/clients') ||
+              (!isClientSubroute && item.href === currentRoute);
             return (
               <button
                 key={item.href}
@@ -68,7 +79,8 @@ export function SidebarNavigation({
                   "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
                   "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
-                  variant === "compact" && "justify-center px-2"
+                  variant === "compact" && "justify-center px-2",
+                  isActive && "bg-black text-sidebar-accent-foreground"
                 )}
               >
                 {item.icon}

@@ -34,7 +34,7 @@ const router = createBrowserRouter([
           element: <NewClient />,
         },
         {
-          path: "/clients",
+          path: "/clients/:id",
           element: <ClientManager />,
           children: [
             {

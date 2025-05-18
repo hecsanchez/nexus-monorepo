@@ -84,8 +84,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  client   Client? @relation(fields: [clientId], references: [id])
-  clientId String? @unique
+  // Many-to-many relation with Client for users
+  clientUsers ClientUser[]
 
   // Many-to-many relation with Client for SEs
   assignedClients ClientsOnSEs[]
@@ -98,6 +98,7 @@ model User {
 
 model Client {
   id            String    @id @default(uuid())
+  name          String
   url           String?
   contractStart DateTime?
   contractEnd   DateTime?
@@ -105,7 +106,6 @@ model Client {
   createdAt     DateTime  @default(now())
 
   // Relations
-  user        User?
   departments Department[]
   workflows   Workflow[]
   credentials Credential[]
@@ -113,11 +113,28 @@ model Client {
 
   // Many-to-many relation with User for SEs
   assignedSEs ClientsOnSEs[]
+  users       ClientUser[]
 
   // Subscription relation
   subscriptions Subscription[]
 
+  pipelineSteps PipelineStep[]
+
   @@map("clients")
+}
+
+model ClientUser {
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+
+  isAdmin   Boolean @default(false) // Org-level admin
+  canBilling Boolean @default(false) // Billing permission
+  notes     String? // Notes for this user in the org
+
+  @@id([clientId, userId])
+  @@map("client_users")
 }
 
 model ClientsOnSEs {
@@ -296,4 +313,13 @@ model DocumentLink {
   createdAt DateTime     @default(now())
 
   @@map("document_links")
+}
+
+model PipelineStep {
+  id          String   @id @default(uuid())
+  client      Client   @relation(fields: [clientId], references: [id])
+  clientId    String
+  label       String
+  order       Int
+  completedAt DateTime?
 }

@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react";
 import { StatsSummaryCard } from "../components/StatsSummaryCard";
 import { Button, Card, CardContent, DataTable } from "@nexus/ui";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -5,19 +6,13 @@ import { Link } from "react-router";
 import Layout from "../components/Layout";
 import { useApiQuery } from "@/hooks/useApi";
 
-// Mock data for clients table
-const clients = [
-  {
-    name: "Acme Corp",
-    contractStart: "Jan 15, 2025",
-    workflows: 24,
-    nodes: 156,
-    executions: 1847,
-    exceptions: 12,
-    revenue: "$24,500",
-    timeSaved: "284h",
-    moneySaved: "$42,600",
-  },
+const RANGE_OPTIONS = [
+  { label: "Last 7 days", value: "last7" },
+  { label: "Last 30 days", value: "last30" },
+  { label: "MTD", value: "mtd" },
+  { label: "QTD", value: "qtd" },
+  { label: "YTD", value: "ytd" },
+  { label: "ITD", value: "itd" },
 ];
 
 type DashboardSummary = {
@@ -28,79 +23,142 @@ type DashboardSummary = {
   activeClients: number;
 };
 
-type Client = (typeof clients)[number];
+type Client = {
+  id: string;
+  name: string;
+  contractId: string;
+  contractStart: string;
+  workflows: number;
+  nodes: number;
+  executions: number;
+  exceptions: number;
+  revenue: string;
+  timeSaved: string;
+  moneySaved: string;
+};
 
 const columns: ColumnDef<Client, unknown>[] = [
   {
     accessorKey: "name",
     header: "Client Name",
-    cell: (props) => (
-      <a className="text-primary underline cursor-pointer">
-        {props.getValue() as string}
-      </a>
-    ),
+    cell: (props) => {
+      const client = props.row.original;
+      return (
+        <Link to={`/clients/${client.id}`} className="text-primary underline cursor-pointer">
+          {client.name}
+        </Link>
+      );
+    },
   },
-  { accessorKey: "contractStart", header: "Contract Start" },
-  { accessorKey: "workflows", header: "Workflows" },
+  {
+    accessorKey: "contractStart",
+    header: "Contract Start",
+    cell: (props) => {
+      const client = props.row.original;
+      return (
+        <Link to={`/contracts/${client.contractId}`} className="text-primary underline cursor-pointer">
+          {client.contractStart}
+        </Link>
+      );
+    },
+  },
+  {
+    accessorKey: "workflows",
+    header: "Workflows",
+    cell: (props) => {
+      const client = props.row.original;
+      return (
+        <Link to={`/clients/${client.id}/workflows`} className="text-primary underline cursor-pointer">
+          {client.workflows}
+        </Link>
+      );
+    },
+  },
   { accessorKey: "nodes", header: "Nodes" },
-  { accessorKey: "executions", header: "Executions" },
-  { accessorKey: "exceptions", header: "Exceptions" },
+  {
+    accessorKey: "executions",
+    header: "Executions",
+    cell: (props) => {
+      const client = props.row.original;
+      return (
+        <Link to={`/clients/${client.id}/executions`} className="text-primary underline cursor-pointer">
+          {client.executions}
+        </Link>
+      );
+    },
+  },
+  {
+    accessorKey: "exceptions",
+    header: "Exceptions",
+    cell: (props) => {
+      const client = props.row.original;
+      return (
+        <Link to={`/clients/${client.id}/exceptions`} className="text-primary underline cursor-pointer">
+          {client.exceptions}
+        </Link>
+      );
+    },
+  },
   { accessorKey: "revenue", header: "Revenue" },
   { accessorKey: "timeSaved", header: "Time Saved" },
   { accessorKey: "moneySaved", header: "Money Saved" },
 ];
 
 const Dashboard = () => {
+  const [selectedRange, setSelectedRange] = useState("itd");
+
   const { data, isLoading, isError } = useApiQuery<DashboardSummary>(
-    "dashboard-summary",
-    "/dashboard/summary"
+    ["dashboard-summary", selectedRange],
+    `/dashboard/summary?range=${selectedRange}`
   );
 
-  const {
-    data: clientsData,
-    isLoading: clientsLoading,
-    isError: clientsError,
-  } = useApiQuery<Client[]>("clients", "/clients");
+  const { data: clientsData } = useApiQuery<Client[]>("clients", "/clients");
 
-  const summaryStats = data
-    ? [
-        {
-          label: "Total Workflows",
-          value: data.totalWorkflows,
-          percentageChange: 0,
-        },
-        {
-          label: "Total Exceptions",
-          value: data.totalExceptions,
-          percentageChange: 0,
-        },
-        {
-          label: "Time Saved",
-          value: `${data.timeSaved}h`,
-          percentageChange: 0,
-        },
-        {
-          label: "Revenue",
-          value: `$${(data.revenue / 1000).toLocaleString()}K`,
-          percentageChange: 0,
-        },
-        {
-          label: "Active Clients",
-          value: data.activeClients,
-          percentageChange: 0,
-        },
-      ]
-    : [];
+  const summaryStats = useMemo(() =>
+    data
+      ? [
+          {
+            label: "Total Workflows",
+            value: data.totalWorkflows,
+            percentageChange: 0,
+          },
+          {
+            label: "Total Exceptions",
+            value: data.totalExceptions,
+            percentageChange: 0,
+          },
+          {
+            label: "Time Saved",
+            value: `${data.timeSaved}h`,
+            percentageChange: 0,
+          },
+          {
+            label: "Revenue",
+            value: `$${(data.revenue / 1000).toLocaleString()}K`,
+            percentageChange: 0,
+          },
+          {
+            label: "Active Clients",
+            value: data.activeClients,
+            percentageChange: 0,
+          },
+        ]
+      : [],
+    [data]
+  );
 
   return (
     <Layout title="Dashboard Overview">
       <div className="flex gap-2 flex-wrap">
-        <Button variant="outline">Last 7 days</Button>
-        <Button variant="outline">Last 30 days</Button>
-        <Button variant="outline">MTD</Button>
-        <Button variant="outline">QTD</Button>
-        <Button variant="outline">YTD</Button>
-        <Button variant="default">ITD</Button>
+        {RANGE_OPTIONS.map((opt) => (
+          <Button
+            key={opt.value}
+            variant={selectedRange === opt.value ? "default" : "outline"}
+            onClick={() => setSelectedRange(opt.value)}
+          >
+            {opt.label}
+          </Button>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">

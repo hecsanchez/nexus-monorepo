@@ -16,7 +16,7 @@ const StatsSummaryCard = React.forwardRef<HTMLDivElement, StatsSummaryCardProps>
       <div
         ref={ref}
         className={cn(
-          "flex flex-col gap-2 rounded-lg border bg-card p-4 shadow-sm min-w-[160px] min-h-[100px] justify-between",
+          "flex flex-col gap-2 rounded-lg border bg-card p-4 min-w-[160px] min-h-[100px] justify-between",
           className
         )}
         {...props}

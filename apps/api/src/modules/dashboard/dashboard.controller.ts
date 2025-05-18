@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -12,7 +12,7 @@ export class DashboardController {
 
   @Get('summary')
   @Roles(UserRole.ADMIN, UserRole.SE)
-  async getSummary() {
-    return await this.dashboardService.getSummary();
+  async getSummary(@Query('range') range: string) {
+    return this.dashboardService.getSummary(range);
   }
 }

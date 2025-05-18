@@ -85,4 +85,29 @@ export class ClientsController {
   getDepartments(@Param('id', ParseUUIDPipe) id: string) {
     return this.clientsService.getDepartments(id);
   }
-} 
+
+  @Get(':id/overview')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  getClientOverview(@Param('id', ParseUUIDPipe) id: string) {
+    return this.clientsService.getClientOverview(id);
+  }
+
+  @Patch(':id/pipeline/:stepId')
+  @Roles(UserRole.ADMIN, UserRole.SE)
+  markPipelineStepComplete(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('stepId', ParseUUIDPipe) stepId: string,
+  ) {
+    return this.clientsService.markPipelineStepComplete(id, stepId);
+  }
+
+  @Patch(':id/documents/:docId')
+  @Roles(UserRole.ADMIN, UserRole.SE)
+  updateDocumentLink(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('docId', ParseUUIDPipe) docId: string,
+    @Body() body: { url: string },
+  ) {
+    return this.clientsService.updateDocumentLink(id, docId, body.url);
+  }
+}

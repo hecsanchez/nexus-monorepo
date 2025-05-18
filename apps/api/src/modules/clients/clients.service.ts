@@ -16,6 +16,7 @@ export class ClientsService {
   create(createClientDto: CreateClientDto): Promise<Client> {
     return this.prisma.client.create({
       data: {
+        name: createClientDto.name,
         url: createClientDto.url,
         contractStart: createClientDto.contractStart,
         contractEnd: createClientDto.contractEnd,
@@ -28,9 +29,14 @@ export class ClientsService {
     const clients = await this.prisma.client.findMany({
       select: {
         id: true,
+        name: true,
         url: true,
         contractStart: true,
-        user: { select: { name: true } },
+        users: {
+          select: {
+            user: { select: { name: true } },
+          },
+        },
         workflows: {
           select: {
             id: true,
@@ -70,7 +76,8 @@ export class ClientsService {
       );
 
       return {
-        name: client.user?.name || 'N/A',
+        id: client.id,
+        name: client.name,
         contractStart: client.contractStart,
         workflows: workflowsCount,
         nodes: nodesCount,
@@ -87,11 +94,17 @@ export class ClientsService {
     const client = await this.prisma.client.findUnique({
       where: { id },
       include: {
-        user: true,
+        users: {
+          where: { user: { role: 'CLIENT' } },
+          include: {
+            user: true,
+          },
+        },
         departments: true,
         workflows: {
           include: {
             nodes: true,
+            department: true,
           },
         },
         assignedSEs: {
@@ -211,6 +224,71 @@ export class ClientsService {
   async getDepartments(clientId: string): Promise<Department[]> {
     return this.prisma.department.findMany({
       where: { clientId },
+    });
+  }
+
+  async getClientOverview(id: string) {
+    const client = await this.prisma.client.findUnique({
+      where: { id },
+      include: {
+        assignedSEs: { include: { se: true } },
+        users: { include: { user: true } },
+        documents: true,
+        pipelineSteps: true,
+      },
+    });
+    if (!client) throw new NotFoundException('Client not found');
+    return {
+      assignedSEs: client.assignedSEs.map((a) => a.se),
+      clientUsers: client.users.map((cu) => ({
+        name: cu.user.name,
+        email: cu.user.email,
+        phone: cu.user.phone,
+        admin: cu.isAdmin,
+        billing: cu.canBilling,
+        notes: cu.notes,
+      })),
+      documents: client.documents,
+      pipeline: client.pipelineSteps
+        .sort((a, b) => a.order - b.order)
+        .map((step) => ({
+          id: step.id,
+          label: step.label,
+          order: step.order,
+          completedAt: step.completedAt,
+        })),
+    };
+  }
+
+  async markPipelineStepComplete(clientId: string, stepId: string) {
+    // Only allow marking the next incomplete step
+    const steps = await this.prisma.pipelineStep.findMany({
+      where: { clientId },
+      orderBy: { order: 'asc' },
+    });
+    const nextIncomplete = steps.find((s) => !s.completedAt);
+    if (!nextIncomplete || nextIncomplete.id !== stepId) {
+      throw new BadRequestException(
+        'Can only complete the next incomplete step',
+      );
+    }
+    return this.prisma.pipelineStep.update({
+      where: { id: stepId },
+      data: { completedAt: new Date() },
+    });
+  }
+
+  async updateDocumentLink(clientId: string, docId: string, url: string) {
+    // Optionally check that the document belongs to the client
+    const doc = await this.prisma.documentLink.findUnique({
+      where: { id: docId },
+    });
+    if (!doc || doc.clientId !== clientId) {
+      throw new NotFoundException('Document not found for this client');
+    }
+    return this.prisma.documentLink.update({
+      where: { id: docId },
+      data: { url },
     });
   }
 }
