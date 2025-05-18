@@ -1,16 +1,6 @@
 import { type ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils";
-import { 
-  LayoutDashboard, 
-  Workflow, 
-  FileText, 
-  CreditCard, 
-  Users, 
-  Building2, 
-  KeyRound,
-  type LucideIcon 
-} from "lucide-react";
 
 const sidebarVariants = cva(
   "flex h-full w-[280px] flex-col border-r bg-sidebar text-sidebar-foreground",
@@ -20,7 +10,7 @@ const sidebarVariants = cva(
         default: "",
         compact: "w-[80px]",
       },
-    },
+    },  
     defaultVariants: {
       variant: "default",
     },
@@ -30,47 +20,9 @@ const sidebarVariants = cva(
 export interface NavItem {
   title: string;
   href: string;
-  icon: LucideIcon;
+  icon: React.ReactNode;
   badge?: string | number;
 }
-
-const defaultNavItems: NavItem[] = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Workflows",
-    href: "/workflows",
-    icon: Workflow,
-  },
-  {
-    title: "Reports",
-    href: "/reports",
-    icon: FileText,
-  },
-  {
-    title: "Billing",
-    href: "/billing",
-    icon: CreditCard,
-  },
-  {
-    title: "Users",
-    href: "/users",
-    icon: Users,
-  },
-  {
-    title: "Clients",
-    href: "/clients",
-    icon: Building2,
-  },
-  {
-    title: "Credentials",
-    href: "/credentials",
-    icon: KeyRound,
-  },
-];
 
 export interface SidebarNavigationProps extends VariantProps<typeof sidebarVariants> {
   className?: string;
@@ -82,7 +34,7 @@ export interface SidebarNavigationProps extends VariantProps<typeof sidebarVaria
 export function SidebarNavigation({
   className,
   variant,
-  items = defaultNavItems,
+  items = [],
   footer,
   onNavItemClick,
 }: SidebarNavigationProps) {
@@ -95,7 +47,6 @@ export function SidebarNavigation({
       <div className="flex-1 overflow-auto py-2">
         <div className="space-y-1 px-2">
           {items.map((item) => {
-            const Icon = item.icon;
             return (
               <button
                 key={item.href}
@@ -107,7 +58,7 @@ export function SidebarNavigation({
                   variant === "compact" && "justify-center px-2"
                 )}
               >
-                <Icon className="h-5 w-5" />
+                {item.icon}
                 {variant !== "compact" && (
                   <>
                     <span>{item.title}</span>

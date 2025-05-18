@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "../../../../packages/ui/src/lib/utils";
+import { cn } from "@nexus/ui/utils";
 
 type Step = {
   label: string;
