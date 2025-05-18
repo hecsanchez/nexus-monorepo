@@ -74,23 +74,23 @@ enum DocumentType {
 }
 
 model User {
-  id           String    @id @default(uuid())
-  name         String
-  email        String    @unique
-  phone        String?
-  role         UserRole
-  password     String
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  role      UserRole
+  password  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   // Relations
-  client       Client?   @relation(fields: [clientId], references: [id])
-  clientId     String?
-  
+  client   Client? @relation(fields: [clientId], references: [id])
+  clientId String?
+
   // Many-to-many relation with Client for SEs
   assignedClients ClientsOnSEs[]
-  
+
   // Notifications for exceptions
   notifiedExceptions Exception[]
 
@@ -98,23 +98,23 @@ model User {
 }
 
 model Client {
-  id            String      @id @default(uuid())
+  id            String    @id @default(uuid())
   url           String?
   contractStart DateTime?
   contractEnd   DateTime?
-  active        Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+
   // Relations
-  users         User[]
-  departments   Department[]
-  workflows     Workflow[]
-  credentials   Credential[]
-  documents     DocumentLink[]
-  
+  users       User[]
+  departments Department[]
+  workflows   Workflow[]
+  credentials Credential[]
+  documents   DocumentLink[]
+
   // Many-to-many relation with User for SEs
-  assignedSEs   ClientsOnSEs[]
-  
+  assignedSEs ClientsOnSEs[]
+
   // Subscription relation
   subscriptions Subscription[]
 
@@ -133,12 +133,12 @@ model ClientsOnSEs {
 }
 
 model Department {
-  id        String     @id @default(uuid())
+  id        String   @id @default(uuid())
   name      String
-  client    Client     @relation(fields: [clientId], references: [id])
+  client    Client   @relation(fields: [clientId], references: [id])
   clientId  String
-  createdAt DateTime   @default(now())
-  
+  createdAt DateTime @default(now())
+
   // Relations
   workflows Workflow[]
 
@@ -146,65 +146,67 @@ model Department {
 }
 
 model Workflow {
-  id           String        @id @default(uuid())
-  name         String
-  description  String?
-  department   Department    @relation(fields: [departmentId], references: [id])
-  departmentId String
-  client       Client        @relation(fields: [clientId], references: [id])
-  clientId     String
-  active       Boolean       @default(true)
-  status       WorkflowStatus @default(ACTIVE)
-  createdAt    DateTime      @default(now())
-  
+  id                     String         @id @default(uuid())
+  name                   String
+  description            String?
+  department             Department     @relation(fields: [departmentId], references: [id])
+  departmentId           String
+  client                 Client         @relation(fields: [clientId], references: [id])
+  clientId               String
+  active                 Boolean        @default(true)
+  timeSavedPerExecution  Int?           @default(0)
+  moneySavedPerExecution Float?         @default(0)
+  status                 WorkflowStatus @default(ACTIVE)
+  createdAt              DateTime       @default(now())
+
   // Relations
-  nodes        Node[]
-  logs         ExecutionLog[]
-  exceptions   Exception[]
+  nodes      Node[]
+  logs       ExecutionLog[]
+  exceptions Exception[]
 
   @@map("workflows")
 }
 
 model Node {
-  id          String        @id @default(uuid())
-  name        String
-  type        String
-  config      Json?
-  workflow    Workflow      @relation(fields: [workflowId], references: [id])
-  workflowId  String
-  createdAt   DateTime      @default(now())
-  
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  config     Json?
+  workflow   Workflow @relation(fields: [workflowId], references: [id])
+  workflowId String
+  createdAt  DateTime @default(now())
+
   // Relations
-  logs        ExecutionLog[]
+  logs ExecutionLog[]
 
   @@map("nodes")
 }
 
 model ExecutionLog {
-  id          String      @id @default(uuid())
-  workflow    Workflow    @relation(fields: [workflowId], references: [id])
+  id          String     @id @default(uuid())
+  workflow    Workflow   @relation(fields: [workflowId], references: [id])
   workflowId  String
-  node        Node?       @relation(fields: [nodeId], references: [id])
+  node        Node?      @relation(fields: [nodeId], references: [id])
   nodeId      String?
   status      String
-  timestamp   DateTime    @default(now())
+  timestamp   DateTime   @default(now())
   log         String?
-  exception   Exception?  @relation(fields: [exceptionId], references: [id])
+  exception   Exception? @relation(fields: [exceptionId], references: [id])
   exceptionId String?
 
   @@map("execution_logs")
 }
 
 model Exception {
-  id            String            @id @default(uuid())
-  workflow      Workflow          @relation(fields: [workflowId], references: [id])
-  workflowId    String
-  type          String
-  severity      ExceptionSeverity
-  remedy        String?
-  status        ExceptionStatus   @default(OPEN)
-  timestamp     DateTime          @default(now())
-  
+  id         String            @id @default(uuid())
+  workflow   Workflow          @relation(fields: [workflowId], references: [id])
+  workflowId String
+  type       String
+  severity   ExceptionSeverity
+  remedy     String?
+  status     ExceptionStatus   @default(OPEN)
+  timestamp  DateTime          @default(now())
+
   // Relations
   notifiedUsers User[]
   logs          ExecutionLog[]
@@ -225,38 +227,38 @@ model Credential {
 }
 
 model Plan {
-  id                    String       @id @default(uuid())
-  name                  String
-  description           String?
-  pricePerCredit        Float
-  contractLength        Int          // in months
-  cadence               PlanCadence
-  setupFee              Float?
-  cap                   Int?         // max credits
-  overageCost           Float?
-  usageApi              String?
-  creditsPerPeriod      Int?
-  prepaymentPercentage  Float?
-  
+  id                   String      @id @default(uuid())
+  name                 String
+  description          String?
+  pricePerCredit       Float
+  contractLength       Int // in months
+  cadence              PlanCadence
+  setupFee             Float?
+  cap                  Int? // max credits
+  overageCost          Float?
+  usageApi             String?
+  creditsPerPeriod     Int?
+  prepaymentPercentage Float?
+
   // Relations
-  subscriptions         Subscription[]
+  subscriptions Subscription[]
 
   @@map("plans")
 }
 
 model Subscription {
-  id           String     @id @default(uuid())
-  client       Client     @relation(fields: [clientId], references: [id])
+  id           String    @id @default(uuid())
+  client       Client    @relation(fields: [clientId], references: [id])
   clientId     String
-  plan         Plan       @relation(fields: [planId], references: [id])
+  plan         Plan      @relation(fields: [planId], references: [id])
   planId       String
   status       String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime  @default(now())
   billedToDate DateTime?
-  
+
   // Relations
-  invoices     Invoice[]
-  usageLogs    UsageLog[]
+  invoices  Invoice[]
+  usageLogs UsageLog[]
 
   @@map("subscriptions")
 }
@@ -270,7 +272,7 @@ model Invoice {
   amount         Float
   status         InvoiceStatus @default(DRAFT)
   paymentMethod  String?
-  description    String?       // Add description field for overage charges
+  description    String? // Add description field for overage charges
 
   @@map("invoices")
 }
@@ -296,4 +298,3 @@ model DocumentLink {
 
   @@map("document_links")
 }
-

@@ -146,16 +146,18 @@ model Department {
 }
 
 model Workflow {
-  id           String         @id @default(uuid())
-  name         String
-  description  String?
-  department   Department     @relation(fields: [departmentId], references: [id])
-  departmentId String
-  client       Client         @relation(fields: [clientId], references: [id])
-  clientId     String
-  active       Boolean        @default(true)
-  status       WorkflowStatus @default(ACTIVE)
-  createdAt    DateTime       @default(now())
+  id                     String         @id @default(uuid())
+  name                   String
+  description            String?
+  department             Department     @relation(fields: [departmentId], references: [id])
+  departmentId           String
+  client                 Client         @relation(fields: [clientId], references: [id])
+  clientId               String
+  active                 Boolean        @default(true)
+  timeSavedPerExecution  Int?           @default(0)
+  moneySavedPerExecution Float?         @default(0)
+  status                 WorkflowStatus @default(ACTIVE)
+  createdAt              DateTime       @default(now())
 
   // Relations
   nodes      Node[]

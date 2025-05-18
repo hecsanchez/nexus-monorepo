@@ -7100,8 +7100,20 @@ export namespace Prisma {
 
   export type AggregateWorkflow = {
     _count: WorkflowCountAggregateOutputType | null
+    _avg: WorkflowAvgAggregateOutputType | null
+    _sum: WorkflowSumAggregateOutputType | null
     _min: WorkflowMinAggregateOutputType | null
     _max: WorkflowMaxAggregateOutputType | null
+  }
+
+  export type WorkflowAvgAggregateOutputType = {
+    timeSavedPerExecution: number | null
+    moneySavedPerExecution: number | null
+  }
+
+  export type WorkflowSumAggregateOutputType = {
+    timeSavedPerExecution: number | null
+    moneySavedPerExecution: number | null
   }
 
   export type WorkflowMinAggregateOutputType = {
@@ -7111,6 +7123,8 @@ export namespace Prisma {
     departmentId: string | null
     clientId: string | null
     active: boolean | null
+    timeSavedPerExecution: number | null
+    moneySavedPerExecution: number | null
     status: $Enums.WorkflowStatus | null
     createdAt: Date | null
   }
@@ -7122,6 +7136,8 @@ export namespace Prisma {
     departmentId: string | null
     clientId: string | null
     active: boolean | null
+    timeSavedPerExecution: number | null
+    moneySavedPerExecution: number | null
     status: $Enums.WorkflowStatus | null
     createdAt: Date | null
   }
@@ -7133,11 +7149,23 @@ export namespace Prisma {
     departmentId: number
     clientId: number
     active: number
+    timeSavedPerExecution: number
+    moneySavedPerExecution: number
     status: number
     createdAt: number
     _all: number
   }
 
+
+  export type WorkflowAvgAggregateInputType = {
+    timeSavedPerExecution?: true
+    moneySavedPerExecution?: true
+  }
+
+  export type WorkflowSumAggregateInputType = {
+    timeSavedPerExecution?: true
+    moneySavedPerExecution?: true
+  }
 
   export type WorkflowMinAggregateInputType = {
     id?: true
@@ -7146,6 +7174,8 @@ export namespace Prisma {
     departmentId?: true
     clientId?: true
     active?: true
+    timeSavedPerExecution?: true
+    moneySavedPerExecution?: true
     status?: true
     createdAt?: true
   }
@@ -7157,6 +7187,8 @@ export namespace Prisma {
     departmentId?: true
     clientId?: true
     active?: true
+    timeSavedPerExecution?: true
+    moneySavedPerExecution?: true
     status?: true
     createdAt?: true
   }
@@ -7168,6 +7200,8 @@ export namespace Prisma {
     departmentId?: true
     clientId?: true
     active?: true
+    timeSavedPerExecution?: true
+    moneySavedPerExecution?: true
     status?: true
     createdAt?: true
     _all?: true
@@ -7211,6 +7245,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: WorkflowAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WorkflowSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: WorkflowMinAggregateInputType
@@ -7241,6 +7287,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: WorkflowCountAggregateInputType | true
+    _avg?: WorkflowAvgAggregateInputType
+    _sum?: WorkflowSumAggregateInputType
     _min?: WorkflowMinAggregateInputType
     _max?: WorkflowMaxAggregateInputType
   }
@@ -7252,9 +7300,13 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active: boolean
+    timeSavedPerExecution: number | null
+    moneySavedPerExecution: number | null
     status: $Enums.WorkflowStatus
     createdAt: Date
     _count: WorkflowCountAggregateOutputType | null
+    _avg: WorkflowAvgAggregateOutputType | null
+    _sum: WorkflowSumAggregateOutputType | null
     _min: WorkflowMinAggregateOutputType | null
     _max: WorkflowMaxAggregateOutputType | null
   }
@@ -7280,6 +7332,8 @@ export namespace Prisma {
     departmentId?: boolean
     clientId?: boolean
     active?: boolean
+    timeSavedPerExecution?: boolean
+    moneySavedPerExecution?: boolean
     status?: boolean
     createdAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
@@ -7297,6 +7351,8 @@ export namespace Prisma {
     departmentId?: boolean
     clientId?: boolean
     active?: boolean
+    timeSavedPerExecution?: boolean
+    moneySavedPerExecution?: boolean
     status?: boolean
     createdAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
@@ -7310,6 +7366,8 @@ export namespace Prisma {
     departmentId?: boolean
     clientId?: boolean
     active?: boolean
+    timeSavedPerExecution?: boolean
+    moneySavedPerExecution?: boolean
     status?: boolean
     createdAt?: boolean
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
@@ -7323,11 +7381,13 @@ export namespace Prisma {
     departmentId?: boolean
     clientId?: boolean
     active?: boolean
+    timeSavedPerExecution?: boolean
+    moneySavedPerExecution?: boolean
     status?: boolean
     createdAt?: boolean
   }
 
-  export type WorkflowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "departmentId" | "clientId" | "active" | "status" | "createdAt", ExtArgs["result"]["workflow"]>
+  export type WorkflowOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "departmentId" | "clientId" | "active" | "timeSavedPerExecution" | "moneySavedPerExecution" | "status" | "createdAt", ExtArgs["result"]["workflow"]>
   export type WorkflowInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     department?: boolean | DepartmentDefaultArgs<ExtArgs>
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -7361,6 +7421,8 @@ export namespace Prisma {
       departmentId: string
       clientId: string
       active: boolean
+      timeSavedPerExecution: number | null
+      moneySavedPerExecution: number | null
       status: $Enums.WorkflowStatus
       createdAt: Date
     }, ExtArgs["result"]["workflow"]>
@@ -7797,6 +7859,8 @@ export namespace Prisma {
     readonly departmentId: FieldRef<"Workflow", 'String'>
     readonly clientId: FieldRef<"Workflow", 'String'>
     readonly active: FieldRef<"Workflow", 'Boolean'>
+    readonly timeSavedPerExecution: FieldRef<"Workflow", 'Int'>
+    readonly moneySavedPerExecution: FieldRef<"Workflow", 'Float'>
     readonly status: FieldRef<"Workflow", 'WorkflowStatus'>
     readonly createdAt: FieldRef<"Workflow", 'DateTime'>
   }
@@ -18434,6 +18498,8 @@ export namespace Prisma {
     departmentId: 'departmentId',
     clientId: 'clientId',
     active: 'active',
+    timeSavedPerExecution: 'timeSavedPerExecution',
+    moneySavedPerExecution: 'moneySavedPerExecution',
     status: 'status',
     createdAt: 'createdAt'
   };
@@ -18653,6 +18719,34 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float'
+   */
+  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'Float[]'
+   */
+  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
    * Reference to a field of type 'WorkflowStatus'
    */
   export type EnumWorkflowStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkflowStatus'>
@@ -18733,34 +18827,6 @@ export namespace Prisma {
    * Reference to a field of type 'CredentialStatus[]'
    */
   export type ListEnumCredentialStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CredentialStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float'
-   */
-  export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -19085,6 +19151,8 @@ export namespace Prisma {
     departmentId?: StringFilter<"Workflow"> | string
     clientId?: StringFilter<"Workflow"> | string
     active?: BoolFilter<"Workflow"> | boolean
+    timeSavedPerExecution?: IntNullableFilter<"Workflow"> | number | null
+    moneySavedPerExecution?: FloatNullableFilter<"Workflow"> | number | null
     status?: EnumWorkflowStatusFilter<"Workflow"> | $Enums.WorkflowStatus
     createdAt?: DateTimeFilter<"Workflow"> | Date | string
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
@@ -19101,6 +19169,8 @@ export namespace Prisma {
     departmentId?: SortOrder
     clientId?: SortOrder
     active?: SortOrder
+    timeSavedPerExecution?: SortOrderInput | SortOrder
+    moneySavedPerExecution?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     department?: DepartmentOrderByWithRelationInput
@@ -19120,6 +19190,8 @@ export namespace Prisma {
     departmentId?: StringFilter<"Workflow"> | string
     clientId?: StringFilter<"Workflow"> | string
     active?: BoolFilter<"Workflow"> | boolean
+    timeSavedPerExecution?: IntNullableFilter<"Workflow"> | number | null
+    moneySavedPerExecution?: FloatNullableFilter<"Workflow"> | number | null
     status?: EnumWorkflowStatusFilter<"Workflow"> | $Enums.WorkflowStatus
     createdAt?: DateTimeFilter<"Workflow"> | Date | string
     department?: XOR<DepartmentScalarRelationFilter, DepartmentWhereInput>
@@ -19136,11 +19208,15 @@ export namespace Prisma {
     departmentId?: SortOrder
     clientId?: SortOrder
     active?: SortOrder
+    timeSavedPerExecution?: SortOrderInput | SortOrder
+    moneySavedPerExecution?: SortOrderInput | SortOrder
     status?: SortOrder
     createdAt?: SortOrder
     _count?: WorkflowCountOrderByAggregateInput
+    _avg?: WorkflowAvgOrderByAggregateInput
     _max?: WorkflowMaxOrderByAggregateInput
     _min?: WorkflowMinOrderByAggregateInput
+    _sum?: WorkflowSumOrderByAggregateInput
   }
 
   export type WorkflowScalarWhereWithAggregatesInput = {
@@ -19153,6 +19229,8 @@ export namespace Prisma {
     departmentId?: StringWithAggregatesFilter<"Workflow"> | string
     clientId?: StringWithAggregatesFilter<"Workflow"> | string
     active?: BoolWithAggregatesFilter<"Workflow"> | boolean
+    timeSavedPerExecution?: IntNullableWithAggregatesFilter<"Workflow"> | number | null
+    moneySavedPerExecution?: FloatNullableWithAggregatesFilter<"Workflow"> | number | null
     status?: EnumWorkflowStatusWithAggregatesFilter<"Workflow"> | $Enums.WorkflowStatus
     createdAt?: DateTimeWithAggregatesFilter<"Workflow"> | Date | string
   }
@@ -20053,6 +20131,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     department: DepartmentCreateNestedOneWithoutWorkflowsInput
@@ -20069,6 +20149,8 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -20081,6 +20163,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -20097,6 +20181,8 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -20111,6 +20197,8 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
   }
@@ -20120,6 +20208,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20131,6 +20221,8 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21127,6 +21219,28 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type EnumWorkflowStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.WorkflowStatus | EnumWorkflowStatusFieldRefInput<$PrismaModel>
     in?: $Enums.WorkflowStatus[] | ListEnumWorkflowStatusFieldRefInput<$PrismaModel>
@@ -21166,8 +21280,15 @@ export namespace Prisma {
     departmentId?: SortOrder
     clientId?: SortOrder
     active?: SortOrder
+    timeSavedPerExecution?: SortOrder
+    moneySavedPerExecution?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type WorkflowAvgOrderByAggregateInput = {
+    timeSavedPerExecution?: SortOrder
+    moneySavedPerExecution?: SortOrder
   }
 
   export type WorkflowMaxOrderByAggregateInput = {
@@ -21177,6 +21298,8 @@ export namespace Prisma {
     departmentId?: SortOrder
     clientId?: SortOrder
     active?: SortOrder
+    timeSavedPerExecution?: SortOrder
+    moneySavedPerExecution?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
   }
@@ -21188,8 +21311,47 @@ export namespace Prisma {
     departmentId?: SortOrder
     clientId?: SortOrder
     active?: SortOrder
+    timeSavedPerExecution?: SortOrder
+    moneySavedPerExecution?: SortOrder
     status?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type WorkflowSumOrderByAggregateInput = {
+    timeSavedPerExecution?: SortOrder
+    moneySavedPerExecution?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type EnumWorkflowStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -21473,28 +21635,6 @@ export namespace Prisma {
     not?: NestedEnumPlanCadenceFilter<$PrismaModel> | $Enums.PlanCadence
   }
 
-  export type FloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type PlanCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -21600,38 +21740,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPlanCadenceFilter<$PrismaModel>
     _max?: NestedEnumPlanCadenceFilter<$PrismaModel>
-  }
-
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type PlanScalarRelationFilter = {
@@ -22374,6 +22482,22 @@ export namespace Prisma {
     connect?: ExceptionWhereUniqueInput | ExceptionWhereUniqueInput[]
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type EnumWorkflowStatusFieldUpdateOperationsInput = {
     set?: $Enums.WorkflowStatus
   }
@@ -22738,22 +22862,6 @@ export namespace Prisma {
     set?: $Enums.PlanCadence
   }
 
-  export type NullableFloatFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type SubscriptionUpdateManyWithoutPlanNestedInput = {
     create?: XOR<SubscriptionCreateWithoutPlanInput, SubscriptionUncheckedCreateWithoutPlanInput> | SubscriptionCreateWithoutPlanInput[] | SubscriptionUncheckedCreateWithoutPlanInput[]
     connectOrCreate?: SubscriptionCreateOrConnectWithoutPlanInput | SubscriptionCreateOrConnectWithoutPlanInput[]
@@ -23108,11 +23216,54 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumWorkflowStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.WorkflowStatus | EnumWorkflowStatusFieldRefInput<$PrismaModel>
     in?: $Enums.WorkflowStatus[] | ListEnumWorkflowStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.WorkflowStatus[] | ListEnumWorkflowStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumWorkflowStatusFilter<$PrismaModel> | $Enums.WorkflowStatus
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumWorkflowStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -23234,17 +23385,6 @@ export namespace Prisma {
     not?: NestedEnumPlanCadenceFilter<$PrismaModel> | $Enums.PlanCadence
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -23285,38 +23425,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPlanCadenceFilter<$PrismaModel>
     _max?: NestedEnumPlanCadenceFilter<$PrismaModel>
-  }
-
-  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumInvoiceStatusFilter<$PrismaModel = never> = {
@@ -23597,6 +23705,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     department: DepartmentCreateNestedOneWithoutWorkflowsInput
@@ -23611,6 +23721,8 @@ export namespace Prisma {
     description?: string | null
     departmentId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -23812,6 +23924,8 @@ export namespace Prisma {
     departmentId?: StringFilter<"Workflow"> | string
     clientId?: StringFilter<"Workflow"> | string
     active?: BoolFilter<"Workflow"> | boolean
+    timeSavedPerExecution?: IntNullableFilter<"Workflow"> | number | null
+    moneySavedPerExecution?: FloatNullableFilter<"Workflow"> | number | null
     status?: EnumWorkflowStatusFilter<"Workflow"> | $Enums.WorkflowStatus
     createdAt?: DateTimeFilter<"Workflow"> | Date | string
   }
@@ -24103,6 +24217,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     client: ClientCreateNestedOneWithoutWorkflowsInput
@@ -24117,6 +24233,8 @@ export namespace Prisma {
     description?: string | null
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -24477,6 +24595,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     department: DepartmentCreateNestedOneWithoutWorkflowsInput
@@ -24492,6 +24612,8 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     logs?: ExecutionLogUncheckedCreateNestedManyWithoutWorkflowInput
@@ -24547,6 +24669,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -24562,6 +24686,8 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     logs?: ExecutionLogUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -24589,6 +24715,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     department: DepartmentCreateNestedOneWithoutWorkflowsInput
@@ -24604,6 +24732,8 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -24681,6 +24811,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -24696,6 +24828,8 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -24769,6 +24903,8 @@ export namespace Prisma {
     name: string
     description?: string | null
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     department: DepartmentCreateNestedOneWithoutWorkflowsInput
@@ -24784,6 +24920,8 @@ export namespace Prisma {
     departmentId: string
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
     nodes?: NodeUncheckedCreateNestedManyWithoutWorkflowInput
@@ -24872,6 +25010,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -24887,6 +25027,8 @@ export namespace Prisma {
     departmentId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -25574,6 +25716,8 @@ export namespace Prisma {
     description?: string | null
     departmentId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
   }
@@ -25671,6 +25815,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     department?: DepartmentUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -25685,6 +25831,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -25698,6 +25846,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     departmentId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25796,6 +25946,8 @@ export namespace Prisma {
     description?: string | null
     clientId: string
     active?: boolean
+    timeSavedPerExecution?: number | null
+    moneySavedPerExecution?: number | null
     status?: $Enums.WorkflowStatus
     createdAt?: Date | string
   }
@@ -25805,6 +25957,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutWorkflowsNestedInput
@@ -25819,6 +25973,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     nodes?: NodeUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -25832,6 +25988,8 @@ export namespace Prisma {
     description?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     active?: BoolFieldUpdateOperationsInput | boolean
+    timeSavedPerExecution?: NullableIntFieldUpdateOperationsInput | number | null
+    moneySavedPerExecution?: NullableFloatFieldUpdateOperationsInput | number | null
     status?: EnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

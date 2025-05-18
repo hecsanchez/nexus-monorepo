@@ -162,6 +162,8 @@ exports.Prisma.WorkflowScalarFieldEnum = {
   departmentId: 'departmentId',
   clientId: 'clientId',
   active: 'active',
+  timeSavedPerExecution: 'timeSavedPerExecution',
+  moneySavedPerExecution: 'moneySavedPerExecution',
   status: 'status',
   createdAt: 'createdAt'
 };

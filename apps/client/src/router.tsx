@@ -12,7 +12,6 @@ import Billing from "./views/Billing";
 import PlanManagerTab from "./views/billing/PlanManagerTab";
 import InvoiceManagerTab from "./views/billing/InvoiceManagerTab";
 import ApplyCreditsTab from "./views/billing/ApplyCreditsTab";
-import Users from "./views/Users";
 
 const router = createBrowserRouter([
     {
@@ -70,10 +69,6 @@ const router = createBrowserRouter([
     {
       path: "/exceptions",
       element: <Exceptions />,
-    },
-    {
-      path: "/users",
-      element: <Users />,
     },
   ]);
 

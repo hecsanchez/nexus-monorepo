@@ -125,3 +125,7 @@ $RECYCLE.BIN/
 .directory
 .Trash-*
 .nfs*
+
+
+.nx/cache
+.nx/workspace-data
