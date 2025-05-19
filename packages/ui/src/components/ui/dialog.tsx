@@ -7,9 +7,49 @@ import { XIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function Dialog({
+  title,
+  description,
+  children,
+  onConfirm,
+  onCancel,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+}: React.ComponentProps<typeof DialogPrimitive.Root> & {
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}) {
+  return (
+    <DialogPrimitive.Root data-slot="dialog" {...props}>
+      <DialogContent>
+        {title && <DialogTitle>{title}</DialogTitle>}
+        {description && <DialogDescription>{description}</DialogDescription>}
+        {children}
+        {(onConfirm || onCancel) && (
+          <DialogFooter>
+            {onCancel && (
+              <button
+                type="button"
+                className="border rounded px-4 py-2 mr-2"
+                onClick={onCancel}
+              >
+                Cancel
+              </button>
+            )}
+            {onConfirm && (
+              <button
+                type="button"
+                className="bg-primary text-white rounded px-4 py-2"
+                onClick={onConfirm}
+              >
+                Confirm
+              </button>
+            )}
+          </DialogFooter>
+        )}
+      </DialogContent>
+    </DialogPrimitive.Root>
+  )
 }
 
 function DialogTrigger({

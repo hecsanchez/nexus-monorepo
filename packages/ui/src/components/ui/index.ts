@@ -17,3 +17,5 @@ export * from "./data-table-view-options";
 export * from "./data-table-faceted-filter";
 export * from "./table";
 export * from "./spinner";
+export * from './switch';
+export * from './sonner';

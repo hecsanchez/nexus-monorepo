@@ -16,7 +16,8 @@ import { AssignSEDto } from './dto/assign-se.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '@prisma/client';
+import { UserRole, WorkflowStatus } from '@prisma/client';
+import { CreateDepartmentDto, UpdateDepartmentDto } from './dto/department.dto';
 
 @Controller('clients')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -109,5 +110,26 @@ export class ClientsController {
     @Body() body: { url: string },
   ) {
     return this.clientsService.updateDocumentLink(id, docId, body.url);
+  }
+
+  @Get(':id/workflows')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  getClientWorkflows(@Param('id', ParseUUIDPipe) id: string) {
+    return this.clientsService.getClientWorkflows(id);
+  }
+
+  @Patch(':id/workflows/:workflowId')
+  @Roles(UserRole.ADMIN, UserRole.SE)
+  updateWorkflow(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('workflowId', ParseUUIDPipe) workflowId: string,
+    @Body()
+    body: {
+      timeSavedPerExecution?: number;
+      moneySavedPerExecution?: number;
+      status?: WorkflowStatus;
+    },
+  ) {
+    return this.clientsService.updateWorkflow(id, workflowId, body);
   }
 }

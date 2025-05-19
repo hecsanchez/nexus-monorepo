@@ -111,9 +111,8 @@ export default function NewClient() {
 
   return (
     <Layout>
-      <PageHeader title="Add New Client" />
       <Card>
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Company Info */}
             <div className="space-y-4">

@@ -63,6 +63,9 @@ export class WorkflowsService {
           orderBy: { timestamp: 'desc' },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 

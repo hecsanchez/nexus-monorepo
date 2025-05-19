@@ -1,5 +1,6 @@
 import { TopBar } from "@nexus/ui";
 import Sidebar from "./Sidebar";
+import { Toaster } from "@nexus/ui";
 
 const Layout = ({ children, title }: { children: React.ReactNode, title: string }) => {
     return (
@@ -14,6 +15,7 @@ const Layout = ({ children, title }: { children: React.ReactNode, title: string 
                     {children}
                 </main>
             </div>
+            <Toaster />
         </div>
     )
 }

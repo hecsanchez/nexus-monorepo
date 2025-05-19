@@ -129,6 +129,21 @@ async function main() {
     },
   });
 
+
+  // Create departments for the client
+  const engineeringDept = await prisma.department.create({
+    data: {
+      name: 'Engineering',
+      clientId: client.id,
+    },
+  });
+  const salesDept = await prisma.department.create({
+    data: {
+      name: 'Sales',
+      clientId: client.id,
+    },
+  });
+
   // Link users to client via ClientUser join table
   await prisma.clientUser.create({
     data: {
@@ -137,6 +152,7 @@ async function main() {
       isAdmin: true,
       canBilling: true,
       notes: 'Primary contact',
+      departmentId: engineeringDept.id,
     },
   });
   await prisma.clientUser.create({
@@ -146,6 +162,7 @@ async function main() {
       isAdmin: false,
       canBilling: false,
       notes: 'Technical lead',
+      departmentId: salesDept.id,
     },
   });
 

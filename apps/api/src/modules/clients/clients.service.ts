@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Client, User, Department } from '@prisma/client';
+import { Client, User, Department, WorkflowStatus } from '@prisma/client';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { AssignSEDto } from './dto/assign-se.dto';
@@ -13,15 +13,93 @@ import { AssignSEDto } from './dto/assign-se.dto';
 export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createClientDto: CreateClientDto): Promise<Client> {
-    return this.prisma.client.create({
-      data: {
-        name: createClientDto.name,
-        url: createClientDto.url,
-        contractStart: createClientDto.contractStart,
-        contractEnd: createClientDto.contractEnd,
-        active: true,
-      },
+  async create(createClientDto: CreateClientDto): Promise<Client> {
+    return this.prisma.$transaction(async (prisma) => {
+      // 1. Create the client and departments
+      const client = await prisma.client.create({
+        data: {
+          name: createClientDto.name,
+          url: createClientDto.url,
+          contractStart: createClientDto.contractStart,
+          contractEnd: createClientDto.contractEnd,
+          active: true,
+          departments: createClientDto.departments
+            ? {
+                create: createClientDto.departments.map((d) => ({
+                  name: d.name,
+                })),
+              }
+            : undefined,
+        },
+        include: { departments: true },
+      });
+
+      // 2. Map department names to IDs
+      const deptMap = new Map<string, string>();
+      for (const dept of client.departments) {
+        deptMap.set(dept.name, dept.id);
+      }
+
+      // 3. Create users with correct departmentId
+      if (createClientDto.users && createClientDto.users.length > 0) {
+        for (const u of createClientDto.users) {
+          const departmentId = deptMap.get(u.department);
+          await prisma.clientUser.create({
+            data: {
+              client: {
+                connect: {
+                  id: client.id,
+                },
+              },
+              user: {
+                connectOrCreate: {
+                  where: { email: u.email },
+                  create: {
+                    name: u.name,
+                    email: u.email,
+                    phone: u.phone,
+                    role: 'CLIENT',
+                    password: 'changeme',
+                  },
+                },
+              },
+              isAdmin: u.access?.admin ?? false,
+              canBilling: u.access?.billing ?? false,
+              notes: '',
+              department: {
+                connect: {
+                  id: departmentId,
+                },
+              },
+            },
+          });
+        }
+      }
+
+      // 4. Create assigned SEs
+      if (
+        createClientDto.assignedSEs &&
+        createClientDto.assignedSEs.length > 0
+      ) {
+        for (const se of createClientDto.assignedSEs) {
+          await prisma.clientsOnSEs.create({
+            data: {
+              clientId: client.id,
+              seId: se.seId,
+            },
+          });
+        }
+      }
+
+      // 5. Return the full client with relations
+      return prisma.client.findUnique({
+        where: { id: client.id },
+        include: {
+          departments: true,
+          users: { include: { user: true } },
+          assignedSEs: { include: { se: true } },
+        },
+      });
     });
   }
 
@@ -128,7 +206,53 @@ export class ClientsService {
     try {
       return await this.prisma.client.update({
         where: { id },
-        data: updateClientDto,
+        data: {
+          name: updateClientDto.name,
+          url: updateClientDto.url,
+          contractStart: updateClientDto.contractStart,
+          contractEnd: updateClientDto.contractEnd,
+          active: updateClientDto.active,
+          departments: updateClientDto.departments
+            ? {
+                create: updateClientDto.departments.map((d) => ({
+                  name: d.name,
+                })),
+              }
+            : undefined,
+          users: updateClientDto.users
+            ? {
+                create: updateClientDto.users.map((u) => ({
+                  user: {
+                    connectOrCreate: {
+                      where: { email: u.email },
+                      create: {
+                        name: u.name,
+                        email: u.email,
+                        phone: u.phone,
+                        role: 'CLIENT',
+                        password: 'changeme',
+                      },
+                    },
+                  },
+                  isAdmin: u.access?.admin ?? false,
+                  canBilling: u.access?.billing ?? false,
+                  notes: '',
+                  department: {
+                    connect: {
+                      id: u.department,
+                    },
+                  },
+                })),
+              }
+            : undefined,
+          assignedSEs: updateClientDto.assignedSEs
+            ? {
+                create: updateClientDto.assignedSEs.map((se) => ({
+                  se: { connect: { email: se.email } },
+                })),
+              }
+            : undefined,
+        },
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -289,6 +413,46 @@ export class ClientsService {
     return this.prisma.documentLink.update({
       where: { id: docId },
       data: { url },
+    });
+  }
+
+  async getClientWorkflows(id: string) {
+    return this.prisma.workflow.findMany({
+      where: { clientId: id },
+      include: {
+        department: true,
+        nodes: true,
+        logs: true,
+        exceptions: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async updateWorkflow(
+    clientId: string,
+    workflowId: string,
+    data: {
+      timeSavedPerExecution?: number;
+      moneySavedPerExecution?: number;
+      status?: WorkflowStatus;
+    },
+  ) {
+    // Optionally check workflow belongs to client
+    const workflow = await this.prisma.workflow.findUnique({
+      where: { id: workflowId },
+    });
+    if (!workflow || workflow.clientId !== clientId)
+      throw new NotFoundException('Workflow not found');
+    return this.prisma.workflow.update({
+      where: { id: workflowId },
+      data: {
+        timeSavedPerExecution: data.timeSavedPerExecution,
+        moneySavedPerExecution: data.moneySavedPerExecution,
+        status: data.status,
+      },
     });
   }
 }

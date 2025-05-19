@@ -76,11 +76,11 @@ export function SidebarNavigation({
                 key={item.href}
                 onClick={() => onNavItemClick?.(item)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                  "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  "cursor-pointer flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
+                  "hover:bg-sidebar-accent",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                   variant === "compact" && "justify-center px-2",
-                  isActive && "bg-black text-sidebar-accent-foreground"
+                  isActive && "bg-black text-sidebar-accent-foreground hover:bg-black"
                 )}
               >
                 {item.icon}
