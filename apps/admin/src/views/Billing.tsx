@@ -10,8 +10,7 @@ const tabs = [
 const Billing = () => {
   const location = useLocation();
   return (
-    <Layout>
-      <div className="text-xl font-semibold mb-2">Billing Center</div>
+    <Layout title="Billing Center">
       <div className="flex border-b mb-4">
         {tabs.map((tab) => (
           <Link

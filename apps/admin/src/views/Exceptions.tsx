@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,16 +12,30 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
 } from "@nexus/ui";
 import Layout from "@/components/Layout";
 import { useApiQuery, useApiMutation } from "../hooks/useApi";
-// @ts-expect-error: types may be missing for @tanstack/react-table
 import { type ColumnDef, type Row } from "@tanstack/react-table";
 
 const statusOptions = [
   { label: "New", value: "OPEN" },
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Resolved", value: "RESOLVED" },
+];
+const severityOptions = [
+  { label: "All severities", value: "ALL" },
+  { label: "Critical", value: "CRITICAL" },
+  { label: "High", value: "HIGH" },
+  { label: "Medium", value: "MEDIUM" },
+  { label: "Low", value: "LOW" },
+];
+const typeOptions = [
+  { label: "All types", value: "ALL" },
+  { label: "Integration", value: "Integration" },
 ];
 
 interface Exception {
@@ -36,10 +51,6 @@ interface Exception {
   severity?: string;
   remedy?: string;
   status?: string;
-}
-
-interface User {
-  client?: { id: string };
 }
 
 const columns: ColumnDef<Exception>[] = [
@@ -69,7 +80,7 @@ const columns: ColumnDef<Exception>[] = [
     header: "Notifications",
     cell: ({ row }: { row: Row<Exception> }) => (
       <div className="flex items-center gap-1">
-        {row.original.notifiedUsers?.slice(0, 2).map((u: { id: string; avatar?: string; name?: string }) => (
+        {row.original.notifiedUsers?.slice(0, 2).map((u) => (
           <Avatar key={u.id} className="w-6 h-6">
             <AvatarImage src={u.avatar} alt={u.name} />
             <AvatarFallback>{u.name?.[0]}</AvatarFallback>
@@ -111,7 +122,7 @@ const columns: ColumnDef<Exception>[] = [
 
 function ExceptionStatusDropdown({ exception }: { exception: Exception }) {
   const { refetch } = useApiQuery<Exception[]>(["exceptions"], "/exceptions");
-  const updateStatus = useApiMutation<Exception, { id: string; status: string }>(
+  const updateStatus = useApiMutation<any, { id: string; status: string }>(
     "/exceptions/:id",
     "patch",
     {
@@ -140,28 +151,85 @@ function ExceptionStatusDropdown({ exception }: { exception: Exception }) {
 }
 
 const Exceptions = () => {
-  // Fetch user info to get clientId
-  const { data: user, isLoading: userLoading } = useApiQuery<User>("me", "/me");
-  const clientId = user?.client?.id;
+  // Fetch clients for filter
+  const { data: clients = [] } = useApiQuery<any[]>("clients", "/clients");
+  // Filter state
+  const [client, setClient] = useState("");
+  const [type, setType] = useState("");
+  const [severity, setSeverity] = useState("");
 
-  // Fetch exceptions for the user's client
+  // Fetch exceptions with filters
   const {
     data: exceptions = [],
+    refetch,
     isLoading,
   } = useApiQuery<Exception[]>(
-    ["exceptions", clientId ?? "none"],
-    clientId ? `/exceptions?clientId=${clientId}` : "",
-    { enabled: !!clientId, queryKey: ["exceptions", clientId ?? "none"] }
+    ["exceptions", client, type, severity],
+    `/exceptions?${client && client !== "ALL" ? `clientId=${client}&` : ""}${severity && severity !== "ALL" ? `severity=${severity}&` : ""}`
+  );
+
+  // Toolbar for filters
+  const toolbar = (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4">
+      <div>
+        <label className="text-sm mb-2 block">Client Name</label>
+        <Select value={client} onValueChange={setClient}>
+          <SelectTrigger className="w-full">
+            {client
+              ? clients.find((c) => c.id === client)?.name || "All clients"
+              : "All clients"}
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ALL">All clients</SelectItem>
+            {clients.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <label className="text-sm mb-2 block">Exception type</label>
+        <Select value={type} onValueChange={setType}>
+          <SelectTrigger className="w-full">
+            {typeOptions.find((t) => t.value === type)?.label || "All types"}
+          </SelectTrigger>
+          <SelectContent>
+            {typeOptions.map((t) => (
+              <SelectItem key={t.value} value={t.value}>
+                {t.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div>
+        <label className="text-sm mb-2 block">Severity</label>
+        <Select value={severity} onValueChange={setSeverity}>
+          <SelectTrigger className="w-full">
+            {severityOptions.find((s) => s.value === severity)?.label || "All severities"}
+          </SelectTrigger>
+          <SelectContent>
+            {severityOptions.map((s) => (
+              <SelectItem key={s.value} value={s.value}>
+                {s.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
   );
 
   return (
     <Layout title="Exceptions">
       <Card className="p-0 overflow-hidden">
         <CardContent className="p-0">
-          {userLoading || isLoading ? (
+          {isLoading ? (
             <div className="p-8 text-center">Loading...</div>
           ) : (
-            <DataTable columns={columns} data={exceptions} headerClassName="bg-[#F7F6F3]" />
+            <DataTable columns={columns} data={exceptions} toolbar={toolbar} headerClassName="bg-[#F7F6F3]" />
           )}
         </CardContent>
       </Card>

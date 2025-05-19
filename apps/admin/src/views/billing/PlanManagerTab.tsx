@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Button, Select, SelectTrigger, SelectContent, SelectItem } from "@nexus/ui";
 
 const plans = [
@@ -8,33 +7,12 @@ const plans = [
 ];
 
 const PlanManagerTab = () => {
-  const [selectedPlan, setSelectedPlan] = useState(plans[0].id);
   return (
     <Card>
       <CardHeader>
         <CardTitle>Plan Manager</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col md:flex-row gap-4 items-center mb-6">
-          <div>
-            <span className="text-sm text-muted-foreground">Current Plan</span>
-            <div className="font-semibold">Enterprise Pro</div>
-          </div>
-          <div>
-            <span className="text-sm text-muted-foreground">Change Plan</span>
-            <Select value={selectedPlan} onValueChange={setSelectedPlan}>
-              <SelectTrigger className="w-48">
-                {plans.find(p => p.id === selectedPlan)?.name}
-              </SelectTrigger>
-              <SelectContent>
-                {plans.map(p => (
-                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button>Update Plan</Button>
-        </div>
         <Table>
           <TableHeader>
             <TableRow>

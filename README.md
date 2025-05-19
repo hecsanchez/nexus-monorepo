@@ -54,7 +54,8 @@ pnpm build
 Run migrations and seed the database:
 ```sh
 cd ../../apps/api
-pnpm prisma migrate dev --name init
+pnpm prisma migrate deploy
+pnpm prisma generate
 pnpm prisma db seed
 ```
 
@@ -64,7 +65,7 @@ You can run each app in a separate terminal:
 ### API
 ```sh
 cd apps/api
-pnpm start:dev
+pnpm dev
 ```
 
 ### Client
@@ -79,19 +80,31 @@ cd apps/admin
 pnpm dev
 ```
 
-## 7. Stripe Setup
+> **Note:** If you run both the admin and client apps at the same time in the same browser, their cookies/sessions will conflict. Use different browsers or incognito windows for each app to avoid authentication issues.
+
+## 7. Default Credentials
+The following users are seeded for local development:
+
+| Role   | Name            | Email                  | Password      |
+|--------|-----------------|------------------------|--------------|
+| Admin  | Admin           | admin@acme.com         | P@ssword123  |
+| SE     | John Smith      | john.smith@example.com | P@ssword123  |
+| SE     | Sarah Johnson   | sarah.johnson@example.com | P@ssword123  |
+| Client | Robert Wilson   | robert@company.com     | P@ssword123  |
+| Client | Emily Brown     | emily@company.com      | P@ssword123  |
+
+## 8. Stripe Setup
 - Get your Stripe API keys from the [Stripe Dashboard](https://dashboard.stripe.com/apikeys).
 - Set `STRIPE_SECRET_KEY` in `apps/api/.env` and `VITE_STRIPE_PUBLISHABLE_KEY` in `apps/client/.env`.
 - For local development, use Stripe test keys.
 
-## 8. Useful Scripts
+## 9. Useful Scripts
 - `pnpm build` — Build all packages
-- `pnpm dev` — Start the client or admin app in development mode
-- `pnpm start:dev` — Start the API in development mode
+- `pnpm dev` — Start the client, api or admin app in development mode
 - `pnpm prisma migrate dev` — Run database migrations
 - `pnpm prisma db seed` — Seed the database
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 - If you change the Prisma schema, always run `pnpm prisma generate` in `apps/api`.
 - If you add new UI components, rebuild the UI package (`pnpm build` in `packages/ui`).
 - Make sure all `.env` files are present and correct.

@@ -30,7 +30,7 @@ export class ExceptionsController {
   }
 
   @Get()
-  @Roles(UserRole.SE, UserRole.CLIENT)
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
   findAll(
     @Query('clientId') clientId?: string,
     @Query('severity') severity?: ExceptionSeverity,
