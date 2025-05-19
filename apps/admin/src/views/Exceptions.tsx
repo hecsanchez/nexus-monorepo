@@ -59,7 +59,7 @@ const Exceptions = () => {
     isLoading,
   } = useApiQuery<any[]>(
     ["exceptions", client, type, severity],
-    `/exceptions?${client ? `clientId=${client}&` : ""}${severity ? `severity=${severity}&` : ""}` // type filter can be added if supported by API
+    `/exceptions?${client && client !== "ALL" ? `clientId=${client}&` : ""}${severity && severity !== "ALL" ? `severity=${severity}&` : ""}` // type filter can be added if supported by API
   );
 
   // Status update mutation
