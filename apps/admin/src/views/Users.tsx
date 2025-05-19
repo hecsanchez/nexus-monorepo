@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   CardContent,
@@ -16,65 +16,47 @@ import {
 } from "@nexus/ui";
 import { MdEdit, MdDelete } from "react-icons/md";
 import Layout from "@/components/Layout";
+import { useApiQuery, useApiMutation } from "../hooks/useApi";
+import { useNavigate } from "react-router";
+import { FaPlus } from "react-icons/fa";
 
 interface User {
+  id: string;
   name: string;
   email: string;
-  phone: string;
-  costRate: number;
-  billRate: number;
+  phone?: string;
+  role: "ADMIN" | "SE";
+  costRate?: number;
+  billRate?: number;
   avatar?: string;
-  assignedClients: string[];
+  assignedClients?: { id: string; name: string }[];
 }
 
-const adminUsers: User[] = [
-  {
-    name: "John Smith",
-    email: "john@example.com",
-    phone: "+1 234 567 8900",
-    costRate: 75,
-    billRate: 150,
-    avatar: undefined,
-    assignedClients: ["Client A", "Client B"],
-  },
-];
-
-const seUsers: User[] = [];
-
-const tabDefs = [
-  { label: "Admin Users", value: "admin" },
-  { label: "SE Users", value: "se" },
-];
-
 const Users = () => {
-  const [tab, setTab] = useState<string>("admin");
-  const users = tab === "admin" ? adminUsers : seUsers;
+  const { data: users = [], isLoading, error } = useApiQuery<User[]>("users", "/users");
+  const navigate = useNavigate();
+  const deleteUser = useApiMutation("/users/:id", "delete", {
+    onSuccess: () => window.location.reload(),
+  });
 
   return (
     <Layout title="User Manager">
       <div className="flex items-center justify-between pb-2">
-      <div className="text-lg font-medium">Manage Users</div>
-        <Button className="bg-black text-white" size="sm">+ Add New User</Button>
+        <div className="text-2xl">Manage Users</div>
+        <Button className="bg-black text-white h-10 text-base antialiased" size="sm" onClick={() => navigate("/users/new")}>
+          <FaPlus className="w-4 h-4 mr-2" /> Add New User
+        </Button>
       </div>
-      <div className="">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex gap-2 mb-4">
-              {tabDefs.map((t) => (
-                <button
-                  key={t.value}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${tab === t.value ? "bg-black text-white border-black" : "bg-muted text-foreground border-transparent hover:bg-accent"}`}
-                  onClick={() => setTab(t.value)}
-                  type="button"
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
+      <Card>
+        <CardContent>
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : error ? (
+            <div className="text-red-500">Failed to load users</div>
+          ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead></TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Phone</TableHead>
@@ -87,40 +69,63 @@ const Users = () => {
               <TableBody>
                 {users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
                       No users found.
                     </TableCell>
                   </TableRow>
                 ) : (
                   users.map((user) => (
-                    <TableRow key={user.email}>
+                    <TableRow key={user.id}>
                       <TableCell>
-                        <Avatar>
-                          {user.avatar ? (
-                            <AvatarImage src={user.avatar} alt={user.name} />
-                          ) : (
-                            <AvatarFallback>{user.name.split(" ").map((n: string) => n[0]).join("")}</AvatarFallback>
-                          )}
-                        </Avatar>
+                        <div className="flex items-center gap-2">
+                          <Avatar>
+                            {user.avatar ? (
+                              <AvatarImage src={user.avatar} alt={user.name} />
+                            ) : (
+                              <AvatarFallback>
+                                {user.name
+                                  .split(" ")
+                                  .map((n: string) => n[0])
+                                  .join("")}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <span className="text-sm font-medium">{user.name}</span>
+                        </div>
                       </TableCell>
-                      <TableCell>{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.phone}</TableCell>
-                      <TableCell>${user.costRate}/hr</TableCell>
-                      <TableCell>${user.billRate}/hr</TableCell>
+                      <TableCell>{user.phone || "-"}</TableCell>
+                      <TableCell>{user.costRate ? `$${user.costRate}/hr` : "-"}</TableCell>
+                      <TableCell>{user.billRate ? `$${user.billRate}/hr` : "-"}</TableCell>
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
-                          {user.assignedClients.map((c: string) => (
-                            <Badge key={c} variant="secondary">{c}</Badge>
+                          {user.assignedClients?.map((c) => (
+                            <Badge key={c.id} variant="secondary">
+                              {c.client.name}
+                            </Badge>
                           ))}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button variant="ghost" size="icon" aria-label="Edit">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Edit"
+                            onClick={() => navigate(`/users/${user.id}/edit`)}
+                          >
                             <MdEdit className="w-5 h-5" />
                           </Button>
-                          <Button variant="ghost" size="icon" aria-label="Delete">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Delete"
+                            onClick={() => {
+                              if (window.confirm("Are you sure you want to delete this user?")) {
+                                deleteUser.mutate({ id: user.id });
+                              }
+                            }}
+                          >
                             <MdDelete className="w-5 h-5 text-red-500" />
                           </Button>
                         </div>
@@ -130,11 +135,11 @@ const Users = () => {
                 )}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </Layout>
   );
 };
 
-export default Users;   
+export default Users;

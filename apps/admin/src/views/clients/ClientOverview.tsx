@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@nexus/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@nexus/ui";
 import {
   Table,
   TableHeader,
@@ -13,6 +13,7 @@ import { useParams } from "react-router";
 import { useApiQuery, useApiMutation } from "@/hooks/useApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { FaCheck } from "react-icons/fa";
 
 // Define types for API data
 interface SupportEngineer {
@@ -185,48 +186,44 @@ const ClientOverview = () => {
           </CardContent>
         </Card>
       </div>
-      {/* Pipeline Progress (dynamic) */}
       <Card>
         <CardHeader>
           <CardTitle>Pipeline Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-6">
             {pipelineSteps.map((step, idx) => (
               <div key={step.id} className="flex items-center gap-3">
                 <span
-                  className={`w-5 h-5 flex items-center justify-center rounded-full border ${
+                  className={`w-8 h-8 flex items-center justify-center rounded-full border ${
                     step.completedAt
-                      ? "bg-green-500 text-white border-green-500"
-                      : "bg-muted text-muted-foreground border-muted"
+                      ? "bg-[#059669] text-white border-[#059669]"
+                      : "bg-[#E9E7E4] text-muted-foreground border-[#E9E7E4]"
                   }`}
                 >
-                  {step.completedAt ? "✓" : ""}
+                  {step.completedAt ? <FaCheck className="w-4 h-4" /> : <div className="w-4 h-4 border-2 border-[#757575] rounded-full" />}
                 </span>
-                <span
-                  className={
-                    step.completedAt
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  }
-                >
+                <div className="flex flex-col">
+                  <span>
                   {step.label}
-                </span>
-                {step.completedAt && (
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    Completed on{" "}
-                    {new Date(step.completedAt).toLocaleDateString()}
                   </span>
-                )}
-                {!step.completedAt && idx === nextIncompleteIdx && (
-                  <button
-                    className="ml-4 px-2 py-0.5 rounded bg-muted text-xs border"
-                    disabled={markStepMutation.isPending}
-                    onClick={() => markStepMutation.mutate({ stepId: step.id })}
-                  >
-                    Mark Complete
-                  </button>
-                )}
+                  {step.completedAt && (
+                    <span className="text-xs text-muted-foreground">
+                      Completed on{" "}
+                      {new Date(step.completedAt).toLocaleDateString()}
+                    </span>
+                  )}
+                  {!step.completedAt && idx === nextIncompleteIdx && (
+                    <Button
+                      className="w-32 font-normal"
+                      disabled={markStepMutation.isPending}
+                      onClick={() => markStepMutation.mutate({ stepId: step.id })}
+                    >
+                      Mark Complete
+                    </Button>
+                  )}
+                </div>
+                
               </div>
             ))}
           </div>

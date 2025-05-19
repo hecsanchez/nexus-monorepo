@@ -85,6 +85,8 @@ model User {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  costRate  Float?
+  billRate  Float?
 
   // Relations
   // Many-to-many relation with Client for users

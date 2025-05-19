@@ -2,25 +2,77 @@ import {
   Card,
   CardContent,
   Button,
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
+  DataTable,
   CardHeader,
   CardTitle,
 } from "@nexus/ui";
 import Layout from "@/components/Layout";
 import { Link } from "react-router";
 import { useApiQuery } from "../hooks/useApi";
+import { type ColumnDef, type Row } from "@tanstack/react-table";
+
+interface Plan {
+  id: string;
+  name: string;
+  cadence: string;
+  contractLength: number;
+  setupFee: number | null;
+  prepaymentPercentage: number | null;
+  cap: number | null;
+  overageCost: number | null;
+}
+
+const columns: ColumnDef<Plan>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "cadence",
+    header: "Pricing Model",
+  },
+  {
+    accessorKey: "contractLength",
+    header: "Contract Length",
+    cell: ({ row }: { row: Row<Plan> }) => `${row.original.contractLength} months`,
+  },
+  {
+    accessorKey: "cadence",
+    header: "Billing Cadence",
+  },
+  {
+    accessorKey: "setupFee",
+    header: "Setup Fee",
+    cell: ({ row }: { row: Row<Plan> }) => row.original.setupFee ? `$${row.original.setupFee}` : "-",
+  },
+  {
+    accessorKey: "prepaymentPercentage",
+    header: "Prepayment %",
+    cell: ({ row }: { row: Row<Plan> }) => row.original.prepaymentPercentage ? `${row.original.prepaymentPercentage}%` : "-",
+  },
+  {
+    accessorKey: "cap",
+    header: "$ Cap",
+    cell: ({ row }: { row: Row<Plan> }) => row.original.cap ? `$${row.original.cap}` : "-",
+  },
+  {
+    accessorKey: "overageCost",
+    header: "Overage Cost",
+    cell: ({ row }: { row: Row<Plan> }) => row.original.overageCost ? `$${row.original.overageCost}` : "-",
+  },
+  {
+    id: "clients",
+    header: "# Clients",
+    cell: () => "-",
+  },
+];
 
 const PlanManager = () => {
   const {
     data: plans = [],
     isLoading,
     error,
-  } = useApiQuery<any[]>("plans", "/plans");
+  } = useApiQuery<Plan[]>("plans", "/plans");
 
   return (
     <Layout title="Plan Manager">
@@ -37,44 +89,7 @@ const PlanManager = () => {
           ) : error ? (
             <div className="text-red-500">Failed to load plans</div>
           ) : (
-            <Table>
-              <TableHeader className="bg-[#EFEAEA] border-t">
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Pricing Model</TableHead>
-                  <TableHead>Contract Length</TableHead>
-                  <TableHead>Billing Cadence</TableHead>
-                  <TableHead>Setup Fee</TableHead>
-                  <TableHead>Prepayment %</TableHead>
-                  <TableHead>$ Cap</TableHead>
-                  <TableHead>Overage Cost</TableHead>
-                  <TableHead># Clients</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {plans.map((plan) => (
-                  <TableRow key={plan.id}>
-                    <TableCell>{plan.name}</TableCell>
-                    <TableCell>{plan.cadence}</TableCell>
-                    <TableCell>{plan.contractLength} months</TableCell>
-                    <TableCell>{plan.cadence}</TableCell>
-                    <TableCell>
-                      {plan.setupFee ? `$${plan.setupFee}` : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {plan.prepaymentPercentage
-                        ? `${plan.prepaymentPercentage}%`
-                        : "-"}
-                    </TableCell>
-                    <TableCell>{plan.cap ? `$${plan.cap}` : "-"}</TableCell>
-                    <TableCell>
-                      {plan.overageCost ? `$${plan.overageCost}` : "-"}
-                    </TableCell>
-                    <TableCell>-</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable columns={columns} data={plans} headerClassName="bg-[#EFEAEA]" />
           )}
         </CardContent>
       </Card>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { StatsSummaryCard } from "../components/StatsSummaryCard";
-import { Button, Card, CardContent, DataTable } from "@nexus/ui";
+import { Button, Card, CardContent, cn, DataTable } from "@nexus/ui";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router";
 import Layout from "../components/Layout";
@@ -31,7 +31,7 @@ const columns: ColumnDef<Client, unknown>[] = [
     cell: (props) => {
       const client = props.row.original;
       return (
-        <Link to={`/clients/${client.id}`} className="text-primary underline cursor-pointer">
+        <Link to={`/clients/${client.id}`} className="text-[#4E86CF] cursor-pointer">
           {client.name}
         </Link>
       );
@@ -43,7 +43,7 @@ const columns: ColumnDef<Client, unknown>[] = [
     cell: (props) => {
       const client = props.row.original;
       return (
-        <Link to={`/contracts/${client.contractId}`} className="text-primary underline cursor-pointer">
+        <Link to={`/contracts/${client.contractId}`} className="text-[#4E86CF] cursor-pointer">
           {client.contractStart}
         </Link>
       );
@@ -55,7 +55,7 @@ const columns: ColumnDef<Client, unknown>[] = [
     cell: (props) => {
       const client = props.row.original;
       return (
-        <Link to={`/clients/${client.id}/workflows`} className="text-primary underline cursor-pointer">
+        <Link to={`/clients/${client.id}/workflows`} className="text-[#4E86CF] cursor-pointer">
           {client.workflows}
         </Link>
       );
@@ -68,7 +68,7 @@ const columns: ColumnDef<Client, unknown>[] = [
     cell: (props) => {
       const client = props.row.original;
       return (
-        <Link to={`/clients/${client.id}/executions`} className="text-primary underline cursor-pointer">
+        <Link to={`/clients/${client.id}/executions`} className="text-[#4E86CF] cursor-pointer">
           {client.executions}
         </Link>
       );
@@ -80,7 +80,7 @@ const columns: ColumnDef<Client, unknown>[] = [
     cell: (props) => {
       const client = props.row.original;
       return (
-        <Link to={`/clients/${client.id}/exceptions`} className="text-primary underline cursor-pointer">
+        <Link to={`/clients/${client.id}/exceptions`} className="text-[#4E86CF] cursor-pointer">
           {client.exceptions}
         </Link>
       );
@@ -140,6 +140,9 @@ const Dashboard = () => {
         {RANGE_OPTIONS.map((opt) => (
           <Button
             key={opt.value}
+            className={cn(
+              selectedRange === opt.value ? "bg-primary text-primary-foreground" : "bg-white",
+            )}
             variant={selectedRange === opt.value ? "default" : "outline"}
             onClick={() => setSelectedRange(opt.value)}
           >
@@ -162,7 +165,7 @@ const Dashboard = () => {
               <Button>+ Add Client</Button>
             </Link>
           </div>
-          <DataTable columns={columns} data={clientsData ?? []} />
+          <DataTable columns={columns} data={clientsData ?? []} headerClassName="bg-[#FAF9F8]" />
         </CardContent>
       </Card>
     </Layout>

@@ -11,7 +11,7 @@ const columns: ColumnDef<Client, unknown>[] = [
       cell: (props) => {
         const client = props.row.original;
         return (
-          <Link to={`/clients/${client.id}`} className="text-primary underline cursor-pointer">
+          <Link to={`/clients/${client.id}`} className="text-[#4E86CF] cursor-pointer">
             {client.name}
           </Link>
         );
@@ -23,7 +23,7 @@ const columns: ColumnDef<Client, unknown>[] = [
       cell: (props) => {
         const client = props.row.original;
         return (
-          <Link to={`/contracts/${client.contractId}`} className="text-primary underline cursor-pointer">
+          <Link to={`/contracts/${client.contractId}`} className="text-[#4E86CF] cursor-pointer">
             {client.contractStart}
           </Link>
         );
@@ -35,7 +35,7 @@ const columns: ColumnDef<Client, unknown>[] = [
       cell: (props) => {
         const client = props.row.original;
         return (
-          <Link to={`/clients/${client.id}/workflows`} className="text-primary underline cursor-pointer">
+          <Link to={`/clients/${client.id}/workflows`} className="text-[#4E86CF] cursor-pointer">
             {client.workflows}
           </Link>
         );
@@ -48,7 +48,7 @@ const columns: ColumnDef<Client, unknown>[] = [
       cell: (props) => {
         const client = props.row.original;
         return (
-          <Link to={`/clients/${client.id}/executions`} className="text-primary underline cursor-pointer">
+          <Link to={`/clients/${client.id}/executions`} className="text-[#4E86CF] cursor-pointer">
             {client.executions}
           </Link>
         );
@@ -60,7 +60,7 @@ const columns: ColumnDef<Client, unknown>[] = [
       cell: (props) => {
         const client = props.row.original;
         return (
-          <Link to={`/clients/${client.id}/exceptions`} className="text-primary underline cursor-pointer">
+          <Link to={`/clients/${client.id}/exceptions`} className="text-[#4E86CF] cursor-pointer">
             {client.exceptions}
           </Link>
         );
@@ -81,7 +81,7 @@ const Clients = () => {
           <div className="flex items-center justify-between p-4">
             <h2 className="text-xl">All Clients</h2>
             <Link to="/clients/new">
-              <Button>+ Add Client</Button>
+              <Button className="h-10 text-base antialiased">+ Add Client</Button>
             </Link>
           </div>
           <DataTable columns={columns} data={clientsData ?? []} />

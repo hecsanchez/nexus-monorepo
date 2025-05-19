@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "billRate" DOUBLE PRECISION,
+ADD COLUMN     "costRate" DOUBLE PRECISION;

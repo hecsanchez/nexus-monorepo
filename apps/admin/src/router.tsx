@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Clients from "./views/Clients";
 import Messaging from "./views/Messaging";
 import Reporting from "./views/Reporting";
+import UserForm from "./views/UserForm";
 const router = createBrowserRouter([
     {
       path: "/login",
@@ -90,6 +91,14 @@ const router = createBrowserRouter([
         {
           path: "/users",
           element: <Users />,
+        },
+        {
+          path: "/users/new",
+          element: <UserForm />,
+        },
+        {
+          path: "/users/:id/edit",
+          element: <UserForm />,
         },
         {
           path: "/messaging",
