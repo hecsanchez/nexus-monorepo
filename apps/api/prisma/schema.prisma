@@ -125,6 +125,8 @@ model Client {
 
   pipelineSteps PipelineStep[]
 
+  paymentMethods PaymentMethod[]
+
   @@map("clients")
 }
 
@@ -330,4 +332,17 @@ model PipelineStep {
   label       String
   order       Int
   completedAt DateTime?
+}
+
+model PaymentMethod {
+  id          String   @id @default(uuid())
+  client      Client   @relation(fields: [clientId], references: [id])
+  clientId    String
+  type        String   // e.g. "visa", "mastercard"
+  last4       String
+  expMonth    Int
+  expYear     Int
+  brand       String
+  isDefault   Boolean  @default(true)
+  createdAt   DateTime @default(now())
 }

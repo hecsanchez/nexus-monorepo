@@ -359,4 +359,32 @@ export class BillingService {
 
     return usageLogs;
   }
+
+  async getClientBillingOverview(clientId: string) {
+    // Get current subscription, plan, credits, usage, invoices, payment method, etc.
+    const [subscription] = await this.prisma.subscription.findMany({
+      where: { clientId, status: 'ACTIVE' },
+      include: { plan: true, invoices: { orderBy: { issueDate: 'desc' }, take: 3 } },
+    });
+    const credits = await this.getClientCredits(clientId);
+    // Usage summary (mocked for now)
+    const usageSummary = {
+      apiCalls: 245678,
+      storageUsed: 1.2, // TB
+      activeUsers: 127,
+    };
+    // SE hours (mocked for now)
+    const seHours = { used: 12.5, total: 20, remaining: 7.5 };
+    const paymentMethod = await this.prisma.paymentMethod.findFirst({
+      where: { clientId, isDefault: true },
+    });
+    return {
+      plan: subscription?.plan,
+      credits,
+      seHours,
+      usageSummary,
+      invoices: subscription?.invoices ?? [],
+      paymentMethod,
+    };
+  }
 }

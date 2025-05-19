@@ -167,6 +167,17 @@ async function main() {
     },
   });
 
+  await prisma.paymentMethod.create({
+    data: {
+      clientId: client.id,
+      type: 'visa',
+      last4: '4242',
+      expMonth: 12,
+      expYear: 2025,
+      brand: 'Visa',
+      isDefault: true,
+    },
+  });
 
   // Create departments for the client
   const engineeringDept = await prisma.department.create({
@@ -264,7 +275,7 @@ async function main() {
   });
 
   // 4. Create Workflows for the Department (and Client)
-  const workflow1 = await prisma.workflow.create({
+  await prisma.workflow.create({
     data: {
       name: 'ETL Pipeline',
       description: 'Acme ETL',
@@ -301,7 +312,7 @@ async function main() {
     },
   });
 
-  const workflow2 = await prisma.workflow.create({
+  await prisma.workflow.create({
     data: {
       name: 'Data Sync',
       description: 'Sync data nightly',

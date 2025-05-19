@@ -116,4 +116,10 @@ export class BillingController {
       endDate ? new Date(endDate) : undefined,
     );
   }
+
+  @Get('clients/:clientId/overview')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  async getClientBillingOverview(@Param('clientId', ParseUUIDPipe) clientId: string) {
+    return this.billingService.getClientBillingOverview(clientId);
+  }
 }

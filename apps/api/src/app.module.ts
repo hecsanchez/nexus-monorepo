@@ -8,7 +8,7 @@ import { ClientsModule } from './modules/clients/clients.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { ExceptionsModule } from './modules/exceptions/exceptions.module';
 import { WorkflowsModule } from './modules/workflows/workflows.module';
-
+import { BillingModule } from './modules/billing/billing.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,6 +19,7 @@ import { WorkflowsModule } from './modules/workflows/workflows.module';
     PlansModule,
     ExceptionsModule,
     WorkflowsModule,
+    BillingModule,
   ],
 })
 export class AppModule {}
