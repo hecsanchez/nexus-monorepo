@@ -72,14 +72,14 @@ const ClientWorkflows = () => {
   if (isError || !workflows) return <div>Error loading workflows.</div>;
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Workflows</CardTitle>
+    <Card className="p-0 gap-0">
+      <CardHeader className="flex flex-row items-center justify-between px-6 py-4">
+        <CardTitle className="font-medium">Workflows</CardTitle>
         <Button>Add Workflow</Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-[#FAF9F8] border-t">
             <TableRow>
               <TableHead>Create Date</TableHead>
               <TableHead>Department</TableHead>

@@ -25,7 +25,6 @@ import {
   TableRow,
 } from "./table"
 
-import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
 
 interface DataTableProps<TData, TValue> {
@@ -85,7 +84,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="space-y-4">
+    <div>
       {toolbar ?? (
         <DataTableToolbar
           table={table}
@@ -93,7 +92,7 @@ export function DataTable<TData, TValue>({
           searchableColumns={searchableColumns}
         />
       )}
-      <div className="rounded-md border">
+      <div className="border-t">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -143,7 +142,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
     </div>
   )
 } 

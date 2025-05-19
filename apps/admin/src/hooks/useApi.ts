@@ -14,6 +14,15 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// intercept if 401 return to /login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response.status === 401) {
+      window.location.href = "/login";
+    }
+  }
+);
 export function useApiQuery<T>(
   queryKey: string | string[],
   url: string,

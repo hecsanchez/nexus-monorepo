@@ -167,10 +167,10 @@ const Dashboard = () => {
         ))}
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">All Clients</h2>
+      <Card className="py-0">
+        <CardContent className="p-0">
+          <div className="flex items-center justify-between p-4">
+            <h2 className="text-xl">All Clients</h2>
             <Link to="/clients/new">
               <Button>+ Add Client</Button>
             </Link>

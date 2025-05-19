@@ -1,88 +1,85 @@
-import { Card, CardHeader, CardTitle, CardContent, Button, Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@nexus/ui";
+import {
+  Card,
+  CardContent,
+  Button,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  CardHeader,
+  CardTitle,
+} from "@nexus/ui";
 import Layout from "@/components/Layout";
 import { Link } from "react-router";
-
-const plans = [
-  {
-    name: "Enterprise Pro",
-    pricingModel: "Tiered",
-    contractLength: "12 months",
-    billingCadence: "Monthly",
-    setupFee: "$5,000",
-    prepayment: "25%",
-    cap: "$100,000",
-    overage: "$150/hr",
-    clients: 12,
-  },
-  {
-    name: "Business Plus",
-    pricingModel: "Fixed",
-    contractLength: "6 months",
-    billingCadence: "Quarterly",
-    setupFee: "$2,500",
-    prepayment: "15%",
-    cap: "$50,000",
-    overage: "$125/hr",
-    clients: 28,
-  },
-  {
-    name: "Starter",
-    pricingModel: "Usage",
-    contractLength: "3 months",
-    billingCadence: "Monthly",
-    setupFee: "$1,000",
-    prepayment: "10%",
-    cap: "$25,000",
-    overage: "$100/hr",
-    clients: 45,
-  },
-];
+import { useApiQuery } from "../hooks/useApi";
 
 const PlanManager = () => {
+  const {
+    data: plans = [],
+    isLoading,
+    error,
+  } = useApiQuery<any[]>("plans", "/plans");
+
   return (
-    <Layout>
-      <div className="flex justify-between items-center mb-4 py-2">
-        <div className="text-xl font-semibold">Plan Manager</div>
-        <Link to="/subscriptions/new">
-          <Button>+ Add Plan</Button>
-        </Link>
-      </div>
-      <Card className="p-0">
-        <CardContent className="p-8">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Pricing Model</TableHead>
-                <TableHead>Contract Length</TableHead>
-                <TableHead>Billing Cadence</TableHead>
-                <TableHead>Setup Fee</TableHead>
-                <TableHead>Prepayment %</TableHead>
-                <TableHead>$ Cap</TableHead>
-                <TableHead>Overage Cost</TableHead>
-                <TableHead># Clients</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {plans.map((plan) => (
-                <TableRow key={plan.name}>
-                  <TableCell>{plan.name}</TableCell>
-                  <TableCell>{plan.pricingModel}</TableCell>
-                  <TableCell>{plan.contractLength}</TableCell>
-                  <TableCell>{plan.billingCadence}</TableCell>
-                  <TableCell>{plan.setupFee}</TableCell>
-                  <TableCell>{plan.prepayment}</TableCell>
-                  <TableCell>{plan.cap}</TableCell>
-                  <TableCell>{plan.overage}</TableCell>
-                  <TableCell>{plan.clients}</TableCell>
+    <Layout title="Plan Manager">
+      <Card className="p-0 gap-0">
+        <CardHeader className="flex flex-row items-center justify-between px-6 py-4">
+          <CardTitle className="font-medium">Manage Plans</CardTitle>
+          <Link to="/subscriptions/new">
+            <Button>+ Add Plan</Button>
+          </Link>
+        </CardHeader>
+        <CardContent className="p-0">
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : error ? (
+            <div className="text-red-500">Failed to load plans</div>
+          ) : (
+            <Table>
+              <TableHeader className="bg-[#EFEAEA] border-t">
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Pricing Model</TableHead>
+                  <TableHead>Contract Length</TableHead>
+                  <TableHead>Billing Cadence</TableHead>
+                  <TableHead>Setup Fee</TableHead>
+                  <TableHead>Prepayment %</TableHead>
+                  <TableHead>$ Cap</TableHead>
+                  <TableHead>Overage Cost</TableHead>
+                  <TableHead># Clients</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {plans.map((plan) => (
+                  <TableRow key={plan.id}>
+                    <TableCell>{plan.name}</TableCell>
+                    <TableCell>{plan.cadence}</TableCell>
+                    <TableCell>{plan.contractLength} months</TableCell>
+                    <TableCell>{plan.cadence}</TableCell>
+                    <TableCell>
+                      {plan.setupFee ? `$${plan.setupFee}` : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {plan.prepaymentPercentage
+                        ? `${plan.prepaymentPercentage}%`
+                        : "-"}
+                    </TableCell>
+                    <TableCell>{plan.cap ? `$${plan.cap}` : "-"}</TableCell>
+                    <TableCell>
+                      {plan.overageCost ? `$${plan.overageCost}` : "-"}
+                    </TableCell>
+                    <TableCell>-</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </Layout>
   );
 };
 
-export default PlanManager; 
+export default PlanManager;

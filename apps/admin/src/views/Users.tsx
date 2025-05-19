@@ -51,13 +51,12 @@ const Users = () => {
   const users = tab === "admin" ? adminUsers : seUsers;
 
   return (
-    <Layout>
-      <div className="flex items-center justify-between px-8 pt-6 pb-2">
-        <div className="text-xl font-semibold">User Manager</div>
+    <Layout title="User Manager">
+      <div className="flex items-center justify-between pb-2">
+      <div className="text-lg font-medium">Manage Users</div>
         <Button className="bg-black text-white" size="sm">+ Add New User</Button>
       </div>
-      <div className="px-8">
-        <div className="text-lg font-medium mb-4">Manage Users</div>
+      <div className="">
         <Card>
           <CardContent className="pt-6">
             <div className="flex gap-2 mb-4">

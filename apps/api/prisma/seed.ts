@@ -29,14 +29,52 @@ async function main() {
     },
   });
 
-  // 1. Create a Plan
-  const plan = await prisma.plan.create({
+  // 1. Create Plans
+  const enterprisePro = await prisma.plan.create({
     data: {
-      name: 'Pro',
-      description: 'Pro plan',
-      pricePerCredit: 10,
+      name: 'Enterprise Pro',
+      description: 'Top-tier plan for large organizations',
+      pricePerCredit: 0, // Not used for tiered
       contractLength: 12,
       cadence: PlanCadence.MONTHLY,
+      setupFee: 5000,
+      cap: 100000,
+      overageCost: 150,
+      creditsPerPeriod: null,
+      prepaymentPercentage: 25,
+      usageApi: 'AIR Direct',
+    },
+  });
+  // Business Plus
+  await prisma.plan.create({
+    data: {
+      name: 'Business Plus',
+      description: 'Fixed plan for growing businesses',
+      pricePerCredit: 0, // Not used for fixed
+      contractLength: 6,
+      cadence: PlanCadence.QUARTERLY,
+      setupFee: 2500,
+      cap: 50000,
+      overageCost: 125,
+      creditsPerPeriod: null,
+      prepaymentPercentage: 15,
+      usageApi: 'AIR Direct',
+    },
+  });
+  // Starter
+  await prisma.plan.create({
+    data: {
+      name: 'Starter',
+      description: 'Entry-level plan for small teams',
+      pricePerCredit: 0, // Not used for usage
+      contractLength: 3,
+      cadence: PlanCadence.MONTHLY,
+      setupFee: 1000,
+      cap: 25000,
+      overageCost: 100,
+      creditsPerPeriod: null,
+      prepaymentPercentage: 10,
+      usageApi: 'AIR Direct',
     },
   });
 
@@ -88,7 +126,7 @@ async function main() {
       subscriptions: {
         create: [
           {
-            planId: plan.id,
+            planId: enterprisePro.id,
             status: 'ACTIVE',
             createdAt: new Date('2025-01-15'),
             invoices: {
@@ -181,45 +219,16 @@ async function main() {
   });
 
   // 7 document links
-  await prisma.documentLink.createMany({
-    data: [
-      {
+  const docTypes = Object.values(DocumentType);
+  for (const type of docTypes) {
+    await prisma.documentLink.create({
+      data: {
         clientId: client.id,
-        type: 'SURVEY',
-        url: 'https://docs.example.com/survey',
+        type,
+        url: `https://acme.com/${type}.pdf`,
       },
-      {
-        clientId: client.id,
-        type: 'SURVEY',
-        url: 'https://docs.example.com/results',
-      },
-      {
-        clientId: client.id,
-        type: 'OTHER',
-        url: 'https://docs.example.com/process',
-      },
-      {
-        clientId: client.id,
-        type: 'ADA_PROPOSAL',
-        url: 'https://docs.example.com/proposal',
-      },
-      {
-        clientId: client.id,
-        type: 'CONTRACT',
-        url: 'https://docs.example.com/contract',
-      },
-      {
-        clientId: client.id,
-        type: 'OTHER',
-        url: 'https://docs.example.com/factory-markdown',
-      },
-      {
-        clientId: client.id,
-        type: 'OTHER',
-        url: 'https://docs.example.com/test-plan',
-      },
-    ],
-  });
+    });
+  }
 
   // 11 pipeline steps (first 3 completed)
   const pipelineLabels = [

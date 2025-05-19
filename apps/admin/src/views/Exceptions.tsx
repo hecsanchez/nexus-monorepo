@@ -23,64 +23,117 @@ import {
   DropdownMenuItem,
 } from "@nexus/ui";
 import Layout from "@/components/Layout";
+import { useApiQuery, useApiMutation } from "../hooks/useApi";
 
-const clients = ["All clients", "Acme Corp"];
-const types = ["All types", "Integration"];
-const severities = ["All severities", "Critical", "Warning", "Info"];
-
-const exceptions = [
-  {
-    datetime: "2025-05-14 12:30:00",
-    client: "Acme Corp",
-    department: "Finance",
-    workflow: "Invoice Processing",
-    notifications: [
-      { name: "Alice", avatar: "" },
-      { name: "Bob", avatar: "" },
-      { name: "Charlie", avatar: "" },
-    ],
-    exceptionType: "Integration",
-    severity: "Critical",
-    remedy: "API timeout",
-    status: "New",
-  },
+const statusOptions = [
+  { label: "New", value: "OPEN" },
+  { label: "In Progress", value: "IN_PROGRESS" },
+  { label: "Resolved", value: "RESOLVED" },
+];
+const severityOptions = [
+  { label: "All severities", value: "ALL" },
+  { label: "Critical", value: "CRITICAL" },
+  { label: "High", value: "HIGH" },
+  { label: "Medium", value: "MEDIUM" },
+  { label: "Low", value: "LOW" },
 ];
 
-const statusOptions = ["New", "In Progress", "Resolved"];
+const typeOptions = [
+  { label: "All types", value: "ALL" },
+  // You may want to fetch these from the API if dynamic
+  { label: "Integration", value: "Integration" },
+];
 
 const Exceptions = () => {
-  const [client, setClient] = useState(clients[0]);
-  const [type, setType] = useState(types[0]);
-  const [severity, setSeverity] = useState(severities[0]);
-  const [rowStatus, setRowStatus] = useState(exceptions.map(e => e.status));
+  // Fetch clients for filter
+  const { data: clients = [] } = useApiQuery<any[]>("clients", "/clients");
+  // Filter state
+  const [client, setClient] = useState("");
+  const [type, setType] = useState("");
+  const [severity, setSeverity] = useState("");
+
+  // Fetch exceptions with filters
+  const {
+    data: exceptions = [],
+    refetch,
+    isLoading,
+  } = useApiQuery<any[]>(
+    ["exceptions", client, type, severity],
+    `/exceptions?${client ? `clientId=${client}&` : ""}${severity ? `severity=${severity}&` : ""}` // type filter can be added if supported by API
+  );
+
+  // Status update mutation
+  const updateStatus = useApiMutation<any, { id: string; status: string }>(
+    "/exceptions/:id",
+    "patch",
+    {
+      onSuccess: () => refetch(),
+    }
+  );
 
   return (
-    <Layout>
-      <div className="text-xl font-semibold mb-2">Exceptions</div>
-      <Card>
+    <Layout title="Exceptions">
+      <Card className="p-0">
         <CardContent className="p-6">
-          <div className="flex gap-4 mb-4">
-            <Select value={client} onValueChange={setClient}>
-              <SelectTrigger className="w-48">{client}</SelectTrigger>
-              <SelectContent>
-                {clients.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm mb-2 block">Client Name</label>
+              <Select
+                value={client}
+                onValueChange={setClient}
+              >
+                <SelectTrigger className="w-full">
+                  {client
+                    ? clients.find((c) => c.id === client)?.name || "All clients"
+                    : "All clients"}
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALL">All clients</SelectItem>
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm mb-2 block">Exception type</label>
             <Select value={type} onValueChange={setType}>
-              <SelectTrigger className="w-48">{type}</SelectTrigger>
+              <SelectTrigger className="w-full">
+                {typeOptions.find((t) => t.value === type)?.label || "All types"}
+              </SelectTrigger>
               <SelectContent>
-                {types.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                {typeOptions.map((t) => (
+                  <SelectItem key={t.value} value={t.value}>
+                    {t.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
+            </div>
+            <div>
+              <label className="text-sm mb-2 block">Severity</label>
             <Select value={severity} onValueChange={setSeverity}>
-              <SelectTrigger className="w-48">{severity}</SelectTrigger>
+              <SelectTrigger className="w-full">
+                {severityOptions.find((s) => s.value === severity)?.label || "All severities"}
+              </SelectTrigger>
               <SelectContent>
-                {severities.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-              </SelectContent>
-            </Select>
+                {severityOptions.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+        </CardContent>
+      </Card>
+      <Card className="p-0 overflow-hidden">
+        <CardContent className="p-0">
           <Table>
-            <TableHeader>
+            <TableHeader className="bg-[#F7F6F3]">
               <TableRow>
                 <TableHead>Datetime reported</TableHead>
                 <TableHead>Client name</TableHead>
@@ -94,46 +147,63 @@ const Exceptions = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {exceptions.map((e, idx) => (
-                <TableRow key={e.datetime}>
-                  <TableCell>{e.datetime}</TableCell>
-                  <TableCell>{e.client}</TableCell>
-                  <TableCell>{e.department}</TableCell>
-                  <TableCell>{e.workflow}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage src={e.notifications[0].avatar} alt={e.notifications[0].name} />
-                        <AvatarFallback>{e.notifications[0].name[0]}</AvatarFallback>
-                      </Avatar>
-                      <Avatar className="w-6 h-6">
-                        <AvatarImage src={e.notifications[1].avatar} alt={e.notifications[1].name} />
-                        <AvatarFallback>{e.notifications[1].name[0]}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-xs text-muted-foreground">+2 more</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{e.exceptionType}</TableCell>
-                  <TableCell>
-                    <Badge variant="destructive">{e.severity}</Badge>
-                  </TableCell>
-                  <TableCell>{e.remedy}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">{rowStatus[idx]}</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        {statusOptions.map(opt => (
-                          <DropdownMenuItem key={opt} onClick={() => setRowStatus(s => s.map((v, i) => i === idx ? opt : v))}>
-                            {opt}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={9}>Loading...</TableCell>
                 </TableRow>
-              ))}
+              ) : exceptions.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9}>No exceptions found.</TableCell>
+                </TableRow>
+              ) : (
+                exceptions.map((e, idx) => (
+                  <TableRow key={e.id}>
+                    <TableCell>{new Date(e.timestamp).toISOString().replace("T", " ").slice(0, 19)}</TableCell>
+                    <TableCell>{e.workflow?.client?.name || "-"}</TableCell>
+                    <TableCell>{e.workflow?.department?.name || "-"}</TableCell>
+                    <TableCell>{e.workflow?.name || "-"}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        {e.notifiedUsers?.slice(0, 2).map((u) => (
+                          <Avatar key={u.id} className="w-6 h-6">
+                            <AvatarImage src={u.avatar} alt={u.name} />
+                            <AvatarFallback>{u.name?.[0]}</AvatarFallback>
+                          </Avatar>
+                        ))}
+                        {e.notifiedUsers && e.notifiedUsers.length > 2 && (
+                          <span className="text-xs text-muted-foreground">
+                            +{e.notifiedUsers.length - 2} more
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>{e.type}</TableCell>
+                    <TableCell>
+                      <Badge variant={e.severity === "CRITICAL" ? "destructive" : "default"}>{e.severity}</Badge>
+                    </TableCell>
+                    <TableCell>{e.remedy}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            {statusOptions.find((s) => s.value === e.status)?.label || e.status}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          {statusOptions.map((opt) => (
+                            <DropdownMenuItem
+                              key={opt.value}
+                              onClick={() => updateStatus.mutate({ id: e.id, status: opt.value })}
+                            >
+                              {opt.label}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

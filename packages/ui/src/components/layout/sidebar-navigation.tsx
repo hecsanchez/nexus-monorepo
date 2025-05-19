@@ -43,41 +43,40 @@ export function SidebarNavigation({
   onNavItemClick,
   logoComponent,
 }: SidebarNavigationProps) {
-  // Enhance regex to match any /clients/:sid subroute
-  const isClientSubroute =
-    /^\/clients\/[^/]+(\/.*)?$/.test(currentRoute);
+  // Robust prefix match: sidebar item href is a prefix and is followed by a slash or is an exact match
+  function isRouteMatch(itemHref: string, route: string) {
+    return route === itemHref || route.startsWith(itemHref + "/");
+  }
 
-  // If on a client subroute, use the /clients nav item color
-  const clientsNavItem = items.find(item => item.href === '/clients');
-  const currentNavItem = isClientSubroute
-    ? clientsNavItem
-    : items.find(item => item.href === currentRoute);
+  const matchingNavItem = items
+    .filter(item => isRouteMatch(item.href, currentRoute))
+    .sort((a, b) => b.href.length - a.href.length)[0];
+
+  const currentNavItem = matchingNavItem || items.find(item => item.href === currentRoute);
   const currentRouteColor = currentNavItem?.bgColor || "bg-gray-50 dark:bg-gray-950";
 
   return (
     <nav className={cn(
-      sidebarVariants({ variant }), 
+      sidebarVariants({ variant }),
       "transition-colors duration-700",
       currentRouteColor,
       className
     )}>
-      <div className="flex h-20 items-center px-4">
+      <div className="flex h-20 items-center px-6">
         {logoComponent}
       </div>
       
       <div className="flex-1 overflow-auto py-2">
-        <div className="space-y-1 px-2">
+        <div className="space-y-1 px-6">
           {items.map((item) => {
-            const isActive =
-              (isClientSubroute && item.href === '/clients') ||
-              (!isClientSubroute && item.href === currentRoute);
+            const isActive = isRouteMatch(item.href, currentRoute);
             return (
               <button
                 key={item.href}
                 onClick={() => onNavItemClick?.(item)}
                 className={cn(
-                  "cursor-pointer flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium",
-                  "hover:bg-sidebar-accent",
+                  "cursor-pointer flex w-full items-center gap-3 rounded-md px-3 py-2",
+                  "hover:bg-sidebar-accent text-sidebar-primary-foreground",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
                   variant === "compact" && "justify-center px-2",
                   isActive && "bg-black text-sidebar-accent-foreground hover:bg-black"

@@ -120,13 +120,13 @@ const ClientOverview = () => {
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Client Users Table */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Client Users</CardTitle>
+        <Card className="lg:col-span-2 p-0 gap-0">
+          <CardHeader className="px-6 py-5 gap-0">
+            <CardTitle className="font-medium">Client Users</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             <Table>
-              <TableHeader>
+              <TableHeader className="bg-[#FAF9F8] border-t">
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
@@ -156,37 +156,30 @@ const ClientOverview = () => {
             </Table>
           </CardContent>
         </Card>
-        {/* Document Links (editable) */}
         <Card>
           <CardHeader>
-            <CardTitle>Document Links</CardTitle>
+            <CardTitle className="font-medium">Document Links</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             {documentLinks.length === 0 && <div>No documents found.</div>}
             {documentLinks.map((doc: DocumentLink) => (
-              <div key={String(doc.id)} className="flex items-center gap-2">
+              <div key={String(doc.id)} className="flex flex-col items-start gap-2">
                 <div className="text-xs text-muted-foreground mb-1 w-32">
                   {doc.type}
                 </div>
                 <Input
                   value={docEdits[doc.id] ?? doc.url}
-                  onChange={(e) =>
-                    setDocEdits({ ...docEdits, [doc.id]: e.target.value })
-                  }
-                  className="text-xs flex-1"
-                />
-                <button
-                  className="ml-2 px-2 py-1 rounded bg-primary text-white text-xs"
-                  disabled={updateDocMutation.isPending}
-                  onClick={() =>
+                  onBlur={() =>
                     updateDocMutation.mutate({
                       docId: doc.id,
                       url: docEdits[doc.id] ?? doc.url,
                     })
                   }
-                >
-                  Save
-                </button>
+                  onChange={(e) =>
+                    setDocEdits({ ...docEdits, [doc.id]: e.target.value })
+                  }
+                  className="text-xs flex-1"
+                />
               </div>
             ))}
           </CardContent>
