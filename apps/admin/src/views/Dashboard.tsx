@@ -5,6 +5,7 @@ import { type ColumnDef } from "@tanstack/react-table";
 import { Link } from "react-router";
 import Layout from "../components/Layout";
 import { useApiQuery } from "@/hooks/useApi";
+import type { Client } from "@/types/client";
 
 const RANGE_OPTIONS = [
   { label: "Last 7 days", value: "last7" },
@@ -21,20 +22,6 @@ type DashboardSummary = {
   timeSaved: number;
   revenue: number;
   activeClients: number;
-};
-
-type Client = {
-  id: string;
-  name: string;
-  contractId: string;
-  contractStart: string;
-  workflows: number;
-  nodes: number;
-  executions: number;
-  exceptions: number;
-  revenue: string;
-  timeSaved: string;
-  moneySaved: string;
 };
 
 const columns: ColumnDef<Client, unknown>[] = [

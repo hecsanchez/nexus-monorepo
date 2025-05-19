@@ -55,13 +55,13 @@ const navItems: NavItem[] = [
     title: "Messaging",
     href: "/messaging",
     icon: <FaComments size={16} />,
-    bgColor: "bg-pink-50 dark:bg-pink-950",
+    bgColor: "bg-[#EFEAEA]",
   },
   {
     title: "Reporting",
     href: "/reporting",
     icon: <FaChartLine size={16} />,
-    bgColor: "bg-teal-50 dark:bg-teal-950",
+    bgColor: "bg-[#EFEAEA]",
   },
   {
     title: "Exceptions",

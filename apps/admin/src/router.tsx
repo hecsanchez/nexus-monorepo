@@ -15,7 +15,9 @@ import ApplyCreditsTab from "./views/billing/ApplyCreditsTab";
 import Users from "./views/Users";
 import Login from "./views/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import Clients from "./views/Clients";
+import Messaging from "./views/Messaging";
+import Reporting from "./views/Reporting";
 const router = createBrowserRouter([
     {
       path: "/login",
@@ -28,6 +30,10 @@ const router = createBrowserRouter([
         {
           element: <Dashboard />,
           index: true,
+        },
+        {
+          path: "/clients",
+          element: <Clients />,
         },
         {
           path: "/clients/new",
@@ -84,6 +90,14 @@ const router = createBrowserRouter([
         {
           path: "/users",
           element: <Users />,
+        },
+        {
+          path: "/messaging",
+          element: <Messaging />,
+        },
+        {
+          path: "/reporting",
+          element: <Reporting />,
         },
       ],
     },
