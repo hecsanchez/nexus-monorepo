@@ -66,10 +66,13 @@ enum CredentialStatus {
 }
 
 enum DocumentType {
-  SURVEY
+  SURVEY_QUESTIONS
+  SURVEY_RESPONSE
+  PROCESS_DOCUMENTATION
   ADA_PROPOSAL
   CONTRACT
-  OTHER
+  FACTORY_MARKDOWN
+  TEST_PLAN
 }
 
 model User {

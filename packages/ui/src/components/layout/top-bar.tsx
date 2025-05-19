@@ -48,7 +48,7 @@ export function TopBar({
       )}
     >
       <div className="flex items-center gap-4">
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-semibold">{title}</h1>
       </div>
 
       <div className="flex items-center gap-4">

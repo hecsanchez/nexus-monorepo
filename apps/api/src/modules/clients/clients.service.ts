@@ -4,17 +4,38 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Client, User, Department, WorkflowStatus } from '@prisma/client';
+import {
+  Client,
+  User,
+  Department,
+  WorkflowStatus,
+  DocumentType,
+  PrismaClient,
+} from '@prisma/client';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { AssignSEDto } from './dto/assign-se.dto';
+
+const DEFAULT_PIPELINE_STEPS = [
+  'Discovery: Initial Survey',
+  'Discovery: Process Deep Dive',
+  'ADA Proposal Sent',
+  'ADA Proposal Review',
+  'ADA Contract Sent',
+  'ADA Contract Signed',
+  'Credentials Collected',
+  'Factory Build Initiated',
+  'Test Plan Generated',
+  'Testing Started',
+  'Production Deploy',
+];
 
 @Injectable()
 export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
-    return this.prisma.$transaction(async (prisma) => {
+    return this.prisma.$transaction(async (prisma: PrismaClient) => {
       // 1. Create the client and departments
       const client = await prisma.client.create({
         data: {
@@ -33,6 +54,30 @@ export class ClientsService {
         },
         include: { departments: true },
       });
+
+      // 1b. Create empty document links for each DocumentType
+      const docTypes = Object.values(DocumentType);
+      for (const type of docTypes) {
+        await prisma.documentLink.create({
+          data: {
+            clientId: client.id,
+            type,
+            url: '',
+          },
+        });
+      }
+
+      // 1c. Create pipeline steps
+      for (let i = 0; i < DEFAULT_PIPELINE_STEPS.length; i++) {
+        await prisma.pipelineStep.create({
+          data: {
+            clientId: client.id,
+            label: DEFAULT_PIPELINE_STEPS[i],
+            order: i + 1,
+            completedAt: null,
+          },
+        });
+      }
 
       // 2. Map department names to IDs
       const deptMap = new Map<string, string>();
