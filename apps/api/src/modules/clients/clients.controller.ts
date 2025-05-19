@@ -132,4 +132,10 @@ export class ClientsController {
   ) {
     return this.clientsService.updateWorkflow(id, workflowId, body);
   }
+
+  @Get(':id/users')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  getClientUsers(@Param('id', ParseUUIDPipe) id: string) {
+    return this.clientsService.getClientUsers(id);
+  }
 }

@@ -500,4 +500,28 @@ export class ClientsService {
       },
     });
   }
+
+  async getClientUsers(id: string) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        clientUsers: {
+          some: {
+            clientId: id,
+          },
+        },
+      },
+      include: {
+        clientUsers: true,
+      },
+    });
+    return users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      canBilling: user.clientUsers[0]?.canBilling,
+      isAdmin: user.clientUsers[0]?.isAdmin,
+      notes: user.clientUsers[0]?.notes,
+    }));
+  }
 }

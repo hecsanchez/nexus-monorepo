@@ -6,7 +6,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../../prisma.service';
 import { hash } from 'bcryptjs';
-import { User } from '@prisma/client';
+import { User, UserRole } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -45,6 +45,11 @@ export class UsersService {
 
   findAll(): Promise<User[]> {
     return this.prisma.user.findMany({
+      where: {
+        role: {
+          not: UserRole.CLIENT,
+        },
+      },
       include: {
         assignedClients: {
           include: {

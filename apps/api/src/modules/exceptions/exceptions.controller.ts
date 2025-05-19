@@ -30,7 +30,7 @@ export class ExceptionsController {
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.SE)
+  @Roles(UserRole.SE, UserRole.CLIENT)
   findAll(
     @Query('clientId') clientId?: string,
     @Query('severity') severity?: ExceptionSeverity,
@@ -46,7 +46,7 @@ export class ExceptionsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.SE)
+  @Roles(UserRole.CLIENT, UserRole.SE)
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateExceptionDto: UpdateExceptionDto,
