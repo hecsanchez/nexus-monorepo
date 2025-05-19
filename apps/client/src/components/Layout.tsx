@@ -16,6 +16,13 @@ interface Client {
 }
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+    const signOut = () => {
+        // delete accessToken cookie
+        document.cookie = "accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        // redirect to login page
+        window.location.href = "/login";
+     }
+
     // Fetch user info
     const { data: user, isLoading: userLoading } = useApiQuery<User>("me", "/me");
     // Get the first assigned client (for client dashboard context)
@@ -32,6 +39,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <TopBar 
                     title={topBarTitle}
                     user={userInfo}
+                    onSignOut={signOut}
                 />
                 <main className="flex-1 p-6 space-y-6 bg-background">
                     {children}

@@ -110,6 +110,9 @@ model Client {
   active        Boolean   @default(true)
   createdAt     DateTime  @default(now())
 
+  // Stripe
+  stripeCustomerId String?
+
   // Relations
   departments Department[]
   workflows   Workflow[]
@@ -337,7 +340,7 @@ model PipelineStep {
 model PaymentMethod {
   id          String   @id @default(uuid())
   client      Client   @relation(fields: [clientId], references: [id])
-  clientId    String
+  clientId    String  @unique
   type        String   // e.g. "visa", "mastercard"
   last4       String
   expMonth    Int
@@ -345,4 +348,5 @@ model PaymentMethod {
   brand       String
   isDefault   Boolean  @default(true)
   createdAt   DateTime @default(now())
+  stripePaymentMethodId String? // Stripe payment method ID
 }

@@ -8,10 +8,14 @@ import { Plan, Subscription, Invoice, InvoiceStatus } from '@prisma/client';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { StripeService } from './stripe.service';
 
 @Injectable()
 export class BillingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private stripeService: StripeService,
+  ) {}
 
   // Plan Management
   async createPlan(createPlanDto: CreatePlanDto): Promise<Plan> {
@@ -360,11 +364,40 @@ export class BillingService {
     return usageLogs;
   }
 
+  async savePaymentMethodToDb(clientId: string, pm: any) {
+    // Upsert the payment method for the client
+    await this.prisma.paymentMethod.upsert({
+      where: { clientId },
+      update: {
+        type: pm.card?.brand || 'card',
+        last4: pm.card?.last4 || '',
+        expMonth: pm.card?.exp_month || 0,
+        expYear: pm.card?.exp_year || 0,
+        brand: pm.card?.brand || '',
+        isDefault: true,
+        stripePaymentMethodId: pm.id,
+      },
+      create: {
+        clientId,
+        type: pm.card?.brand || 'card',
+        last4: pm.card?.last4 || '',
+        expMonth: pm.card?.exp_month || 0,
+        expYear: pm.card?.exp_year || 0,
+        brand: pm.card?.brand || '',
+        isDefault: true,
+        stripePaymentMethodId: pm.id,
+      },
+    });
+  }
+
   async getClientBillingOverview(clientId: string) {
     // Get current subscription, plan, credits, usage, invoices, payment method, etc.
     const [subscription] = await this.prisma.subscription.findMany({
       where: { clientId, status: 'ACTIVE' },
-      include: { plan: true, invoices: { orderBy: { issueDate: 'desc' }, take: 3 } },
+      include: {
+        plan: true,
+        invoices: { orderBy: { issueDate: 'desc' }, take: 3 },
+      },
     });
     const credits = await this.getClientCredits(clientId);
     // Usage summary (mocked for now)
@@ -375,9 +408,31 @@ export class BillingService {
     };
     // SE hours (mocked for now)
     const seHours = { used: 12.5, total: 20, remaining: 7.5 };
-    const paymentMethod = await this.prisma.paymentMethod.findFirst({
+    const paymentMethodRecord = await this.prisma.paymentMethod.findFirst({
       where: { clientId, isDefault: true },
     });
+    let paymentMethod = null;
+    if (paymentMethodRecord?.stripePaymentMethodId) {
+      try {
+        const pm = await this.stripeService.getPaymentMethod(
+          paymentMethodRecord.stripePaymentMethodId,
+        );
+        paymentMethod = {
+          last4: pm.card?.last4,
+          expMonth: pm.card?.exp_month,
+          expYear: pm.card?.exp_year,
+          brand: pm.card?.brand,
+        };
+      } catch {
+        // fallback to DB record if Stripe fetch fails
+        paymentMethod = {
+          last4: paymentMethodRecord.last4,
+          expMonth: paymentMethodRecord.expMonth,
+          expYear: paymentMethodRecord.expYear,
+          brand: paymentMethodRecord.brand,
+        };
+      }
+    }
     return {
       plan: subscription?.plan,
       credits,

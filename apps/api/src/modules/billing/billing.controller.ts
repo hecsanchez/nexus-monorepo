@@ -17,11 +17,17 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole, InvoiceStatus } from '@prisma/client';
+import { StripeService } from './stripe.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('billing')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class BillingController {
-  constructor(private readonly billingService: BillingService) {}
+  constructor(
+    private readonly billingService: BillingService,
+    private readonly stripeService: StripeService,
+    private readonly configService: ConfigService,
+  ) {}
 
   // Plan endpoints
   @Post('plans')
@@ -119,7 +125,51 @@ export class BillingController {
 
   @Get('clients/:clientId/overview')
   @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
-  async getClientBillingOverview(@Param('clientId', ParseUUIDPipe) clientId: string) {
+  async getClientBillingOverview(
+    @Param('clientId', ParseUUIDPipe) clientId: string,
+  ) {
     return this.billingService.getClientBillingOverview(clientId);
+  }
+
+  @Get('clients/:clientId/stripe/setup-intent')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  async createSetupIntent(@Param('clientId', ParseUUIDPipe) clientId: string) {
+    // In a real app, you would look up the client and their email/name
+    // For demo, just use dummy values
+    const customer = await this.stripeService.getOrCreateCustomer(
+      clientId,
+      `client${clientId}@example.com`,
+      `Client ${clientId}`,
+    );
+    const setupIntent = await this.stripeService['stripe'].setupIntents.create({
+      customer: customer.id,
+    });
+    return { clientSecret: setupIntent.client_secret };
+  }
+
+  @Post('clients/:clientId/stripe/save-payment-method')
+  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  async savePaymentMethod(
+    @Param('clientId', ParseUUIDPipe) clientId: string,
+    @Body('paymentMethodId') paymentMethodId: string,
+    @Body('email') email: string,
+    @Body('name') name: string,
+  ) {
+    // Attach the payment method to the customer and set as default
+    const customer = await this.stripeService.getOrCreateCustomer(
+      clientId,
+      email,
+      name,
+    );
+    const pm = await this.stripeService['stripe'].paymentMethods.attach(
+      paymentMethodId,
+      { customer: customer.id },
+    );
+    await this.stripeService['stripe'].customers.update(customer.id, {
+      invoice_settings: { default_payment_method: pm.id },
+    });
+    // Save the payment method details in your DB
+    await this.billingService.savePaymentMethodToDb(clientId, pm);
+    return { success: true };
   }
 }

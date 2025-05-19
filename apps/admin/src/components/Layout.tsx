@@ -3,6 +3,14 @@ import Sidebar from "./Sidebar";
 import { Toaster } from "@nexus/ui";
 
 const Layout = ({ children, title }: { children: React.ReactNode, title: string }) => {
+
+    const signOut = () => {
+       // delete accessToken cookie
+       document.cookie = "accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+       // redirect to login page
+       window.location.href = "/login";
+    }
+
     return (
         <div className="flex h-screen bg-background">
             <Sidebar />
@@ -10,6 +18,9 @@ const Layout = ({ children, title }: { children: React.ReactNode, title: string 
                 <TopBar 
                     title={title}
                     user={{ name: "Jane Doe", email: "jane@example.com" }} 
+                    onSignOut={() => {
+                        signOut();
+                    }}
                 />
                 <main className="flex-1 p-6 space-y-6 bg-background">
                     {children}
