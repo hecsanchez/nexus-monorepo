@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "predev": "node ./scripts/load-config.js",
     "dev": "pnpm --parallel -r --filter \"./apps/**\" run dev",
     "dev:api": "pnpm --filter api run dev",
     "dev:client": "pnpm --filter client run dev",
