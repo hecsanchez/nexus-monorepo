@@ -40,7 +40,11 @@ export class DashboardService {
 
     // Get all workflows
     const workflows = await this.prisma.workflow.findMany({
-      select: { id: true, timeSavedPerExecution: true, moneySavedPerExecution: true },
+      select: {
+        id: true,
+        timeSavedPerExecution: true,
+        moneySavedPerExecution: true,
+      },
     });
 
     // For each workflow, count executions (logs) in last 7 days and all time
@@ -50,12 +54,16 @@ export class DashboardService {
     let revenueAll = 0;
     for (const wf of workflows) {
       // All time executions
-      const allLogsCount = await this.prisma.executionLog.count({ where: { workflowId: wf.id } });
+      const allLogsCount = await this.prisma.executionLog.count({
+        where: { workflowId: wf.id },
+      });
       timeSavedAll += (wf.timeSavedPerExecution || 0) * allLogsCount;
       revenueAll += (wf.moneySavedPerExecution || 0) * allLogsCount;
       // Last 7 days executions
       const logsCount = fromDate
-        ? await this.prisma.executionLog.count({ where: { workflowId: wf.id, timestamp: { gte: fromDate } } })
+        ? await this.prisma.executionLog.count({
+            where: { workflowId: wf.id, timestamp: { gte: fromDate } },
+          })
         : allLogsCount;
       timeSaved += (wf.timeSavedPerExecution || 0) * logsCount;
       revenue += (wf.moneySavedPerExecution || 0) * logsCount;
@@ -108,7 +116,11 @@ export class DashboardService {
     // Get all workflows for this client
     const workflows = await this.prisma.workflow.findMany({
       where: { clientId },
-      select: { id: true, timeSavedPerExecution: true, moneySavedPerExecution: true },
+      select: {
+        id: true,
+        timeSavedPerExecution: true,
+        moneySavedPerExecution: true,
+      },
     });
 
     // For each workflow, count executions (logs) in last 7 days and all time
@@ -118,12 +130,16 @@ export class DashboardService {
     let moneySavedAll = 0;
     for (const wf of workflows) {
       // All time executions
-      const allLogsCount = await this.prisma.executionLog.count({ where: { workflowId: wf.id } });
+      const allLogsCount = await this.prisma.executionLog.count({
+        where: { workflowId: wf.id },
+      });
       timeSavedAll += (wf.timeSavedPerExecution || 0) * allLogsCount;
       moneySavedAll += (wf.moneySavedPerExecution || 0) * allLogsCount;
       // Last 7 days executions
       const logsCount = fromDate
-        ? await this.prisma.executionLog.count({ where: { workflowId: wf.id, timestamp: { gte: fromDate } } })
+        ? await this.prisma.executionLog.count({
+            where: { workflowId: wf.id, timestamp: { gte: fromDate } },
+          })
         : allLogsCount;
       timeSaved += (wf.timeSavedPerExecution || 0) * logsCount;
       moneySaved += (wf.moneySavedPerExecution || 0) * logsCount;

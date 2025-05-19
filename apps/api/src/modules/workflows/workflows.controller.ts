@@ -77,7 +77,7 @@ export class WorkflowsController {
   }
 
   @Get(':id/logs')
-  @Roles(UserRole.ADMIN, UserRole.SE, UserRole.CLIENT)
+  @Roles(UserRole.SE, UserRole.CLIENT)
   getExecutionLogs(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,

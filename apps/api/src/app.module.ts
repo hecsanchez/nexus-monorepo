@@ -7,6 +7,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { ExceptionsModule } from './modules/exceptions/exceptions.module';
+import { WorkflowsModule } from './modules/workflows/workflows.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ExceptionsModule } from './modules/exceptions/exceptions.module';
     ClientsModule,
     PlansModule,
     ExceptionsModule,
+    WorkflowsModule,
   ],
 })
 export class AppModule {}
