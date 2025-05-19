@@ -15,4 +15,21 @@ export class DashboardController {
   async getSummary(@Query('range') range: string) {
     return this.dashboardService.getSummary(range);
   }
+
+  /**
+   * Returns client dashboard summary stats:
+   * - timeSaved: number (last 7 days)
+   * - timeSavedAll: number (all time)
+   * - moneySaved: number (last 7 days)
+   * - moneySavedAll: number (all time)
+   * - activeWorkflows: number
+   */
+  @Get('client-summary')
+  @Roles(UserRole.CLIENT)
+  async getClientSummary(
+    @Query('clientId') clientId: string,
+    @Query('range') range: string,
+  ) {
+    return this.dashboardService.getClientSummary(clientId, range);
+  }
 }

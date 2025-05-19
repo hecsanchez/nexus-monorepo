@@ -20,8 +20,7 @@ const Credentials = () => {
   });
 
   return (
-    <Layout>
-      <div className="text-xl font-semibold mb-2">Acme Corporation</div>
+    <Layout title="Acme Corporation">
       <div className="flex gap-6">
         {/* Services List */}
         <Card className="w-64 flex-shrink-0">

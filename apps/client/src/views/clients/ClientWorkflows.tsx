@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,57 +10,76 @@ import {
   TableRow,
   TableHead,
   TableCell,
+  Switch,
+  toast,
+  Dialog,
 } from "@nexus/ui";
+import { useParams } from "react-router";
+import { useApiQuery, useApiMutation } from "@/hooks/useApi";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
-const workflows = [
-  {
-    date: "Jan 15, 2025",
-    department: "Sales",
-    name: "Lead Processing",
-    nodes: 12,
-    executions: 234,
-    exceptions: 2,
-    timeSaved: 30,
-    moneySaved: 75,
-    status: true,
-    roiLink: "#",
-    reportLink: "#",
-  },
-  {
-    date: "Jan 10, 2025",
-    department: "HR",
-    name: "Onboarding",
-    nodes: 8,
-    executions: 45,
-    exceptions: 0,
-    timeSaved: 120,
-    moneySaved: 180,
-    status: false,
-    roiLink: "#",
-    reportLink: "#",
-  },
-];
+interface Workflow {
+  id: string;
+  name: string;
+  createdAt: string;
+  department: { name: string };
+  nodes: unknown[];
+  logs: unknown[];
+  exceptions: unknown[];
+  timeSavedPerExecution?: number;
+  moneySavedPerExecution?: number;
+  status?: string;
+}
 
 const ClientWorkflows = () => {
-  const [workflowStatus, setWorkflowStatus] = useState(
-    workflows.map((w) => w.status)
+  const { id } = useParams();
+  const {
+    data: workflows,
+    isLoading,
+    isError,
+  } = useApiQuery<Workflow[]>(
+    ["client-workflows", id?.toString() || ""],
+    `/clients/${id}/workflows`
   );
+  const queryClient = useQueryClient();
+  const updateWorkflowMutation = useApiMutation<
+    void,
+    {
+      workflowId: string;
+      timeSavedPerExecution?: number;
+      moneySavedPerExecution?: number;
+      status?: string;
+    }
+  >(`/clients/${id}/workflows/:workflowId`, "patch", {
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["client-workflows", id?.toString() || ""],
+      });
+      toast.success("Workflow updated");
+    },
+  });
+  const [edit, setEdit] = useState<
+    Record<string, { timeSaved?: string; moneySaved?: string }>
+  >({});
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    stepId?: string;
+    nextStatus?: boolean;
+  } | null>(null);
 
-  const toggleStatus = (idx: number) => {
-    setWorkflowStatus((statuses) =>
-      statuses.map((s, i) => (i === idx ? !s : s))
-    );
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (isError || !workflows) return <div>Error loading workflows.</div>;
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Workflows</CardTitle>
+    <Card className="p-0 gap-0">
+      <CardHeader className="flex flex-row items-center justify-between px-6 py-4">
+        <CardTitle className="font-medium">Workflows</CardTitle>
         <Button>Add Workflow</Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-[#FAF9F8] border-t">
             <TableRow>
               <TableHead>Create Date</TableHead>
               <TableHead>Department</TableHead>
@@ -76,61 +94,121 @@ const ClientWorkflows = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {workflows.map((w, idx) => (
-              <TableRow key={w.name}>
-                <TableCell>{w.date}</TableCell>
-                <TableCell>{w.department}</TableCell>
+            {workflows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={10}>No workflows found.</TableCell>
+              </TableRow>
+            )}
+            {workflows.map((w) => (
+              <TableRow key={w.id}>
+                <TableCell>
+                  {new Date(w.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>{w.department?.name || "—"}</TableCell>
                 <TableCell>{w.name}</TableCell>
-                <TableCell>{w.nodes}</TableCell>
+                <TableCell>{w.nodes?.length ?? 0}</TableCell>
                 <TableCell>
                   <a href="#" className="text-primary underline cursor-pointer">
-                    {w.executions}
+                    {w.logs?.length ?? 0}
                   </a>
                 </TableCell>
                 <TableCell>
                   <a href="#" className="text-primary underline cursor-pointer">
-                    {w.exceptions}
+                    {w.exceptions?.length ?? 0}
                   </a>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono">{w.timeSaved}</span>
+                  <input
+                    type="number"
+                    className="w-16 border rounded px-1 text-right font-mono"
+                    value={
+                      edit[w.id]?.timeSaved ?? w.timeSavedPerExecution ?? ""
+                    }
+                    onChange={(e) =>
+                      setEdit({
+                        ...edit,
+                        [w.id]: {
+                          ...edit[w.id],
+                          timeSaved: e.target.value,
+                          moneySaved:
+                            edit[w.id]?.moneySaved ??
+                            w.moneySavedPerExecution?.toString() ??
+                            "",
+                        },
+                      })
+                    }
+                    onBlur={(e) => {
+                      if (
+                        e.target.value !== "" &&
+                        e.target.value !==
+                          (w.timeSavedPerExecution ?? "").toString()
+                      ) {
+                        updateWorkflowMutation.mutate({
+                          workflowId: w.id,
+                          timeSavedPerExecution: Number(e.target.value),
+                        });
+                      }
+                    }}
+                  />
                   <span className="ml-1 text-xs text-muted-foreground">
                     min
                   </span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-mono">{w.moneySaved}</span>
+                  <input
+                    type="number"
+                    className="w-16 border rounded px-1 text-right font-mono"
+                    value={
+                      edit[w.id]?.moneySaved ?? w.moneySavedPerExecution ?? ""
+                    }
+                    onChange={(e) =>
+                      setEdit({
+                        ...edit,
+                        [w.id]: {
+                          ...edit[w.id],
+                          moneySaved: e.target.value,
+                          timeSaved:
+                            edit[w.id]?.timeSaved ??
+                            w.timeSavedPerExecution?.toString() ??
+                            "",
+                        },
+                      })
+                    }
+                    onBlur={(e) => {
+                      if (
+                        e.target.value !== "" &&
+                        e.target.value !==
+                          (w.moneySavedPerExecution ?? "").toString()
+                      ) {
+                        updateWorkflowMutation.mutate({
+                          workflowId: w.id,
+                          moneySavedPerExecution: Number(e.target.value),
+                        });
+                      }
+                    }}
+                  />
                   <span className="ml-1 text-xs text-muted-foreground">
                     USD
                   </span>
                 </TableCell>
                 <TableCell>
-                  <button
-                    className={`w-10 h-6 rounded-full border flex items-center transition-colors duration-200 ${
-                      workflowStatus[idx]
-                        ? "bg-primary border-primary"
-                        : "bg-muted border-muted-foreground"
-                    }`}
-                    onClick={() => toggleStatus(idx)}
-                  >
-                    <span
-                      className={`block w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-200 ${
-                        workflowStatus[idx] ? "translate-x-4" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
+                  <Switch
+                    checked={w.status === "ACTIVE"}
+                    onCheckedChange={(checked) =>
+                      setConfirmDialog({
+                        open: true,
+                        stepId: w.id,
+                        nextStatus: checked,
+                      })
+                    }
+                    aria-label="Toggle workflow status"
+                  />
                 </TableCell>
                 <TableCell className="flex gap-2">
-                  <a
-                    href={w.roiLink}
-                    className="text-primary underline cursor-pointer"
-                  >
+                  <a href="#" className="text-primary underline cursor-pointer">
                     ROI
                   </a>
-                  <a
-                    href={w.reportLink}
-                    className="text-primary underline cursor-pointer"
-                  >
+                  <a href="#" className="text-primary underline cursor-pointer">
                     Report
                   </a>
                 </TableCell>
@@ -138,6 +216,28 @@ const ClientWorkflows = () => {
             ))}
           </TableBody>
         </Table>
+        {confirmDialog?.open && (
+          <Dialog
+            open={confirmDialog.open}
+            onOpenChange={(open) => {
+              if (!open) {
+                setConfirmDialog(null);
+              }
+            }}
+            title="Are you sure?"
+            description={`Are you sure you want to mark this step as ${
+              confirmDialog.nextStatus ? "active" : "inactive"
+            }?`}
+            onConfirm={() => {
+              updateWorkflowMutation.mutate({
+                workflowId: confirmDialog.stepId!,
+                status: confirmDialog.nextStatus ? "ACTIVE" : "INACTIVE",
+              });
+              setConfirmDialog(null);
+            }}
+            onCancel={() => setConfirmDialog(null)}
+          />
+        )}
       </CardContent>
     </Card>
   );

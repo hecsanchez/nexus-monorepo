@@ -1,16 +1,19 @@
-import { Outlet, Link, useLocation } from "react-router";
+import { Outlet, Link, useLocation, useParams } from "react-router";
 import Layout from "../components/Layout";
 
-const tabs = [
-  { label: "Overview", to: "/clients" },
-  { label: "Client Workflows", to: "/clients/workflows" },
-];
+
 
 const ClientManager = () => {
   const location = useLocation();
+  const { id } = useParams();
+
+  const tabs = [
+    { label: "Overview", to: `/clients/${id}` },
+    { label: "Client Workflows", to: `/clients/${id}/workflows` },
+  ];
+
   return (
-    <Layout>
-      <div className="text-xl font-semibold mb-2">Client Manager</div>
+    <Layout title="Client Manager">
       <div className="flex border-b mb-4">
         {tabs.map((tab) => (
           <Link

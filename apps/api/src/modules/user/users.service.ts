@@ -63,9 +63,29 @@ export class UsersService {
     return this.prisma.user.findUnique({
       where: { id },
       include: {
-        assignedClients: true,
+        assignedClients: {
+          include: {
+            client: true,
+          },
+        },
       },
     });
+  }
+
+  async findClientUser(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        clientUsers: {
+          include: {
+            client: true,
+          },
+        },
+      },
+    });
+    const { clientUsers, ...rest } = user;
+    const client = clientUsers[0]?.client;
+    return { ...rest, client };
   }
 
   findByEmail(email: string) {

@@ -10,7 +10,7 @@ export class MeController {
 
   @Get('')
   getUserDetails(@Req() req: ExtendedRequest) {
-    const userSid = req.user.sid;
-    return this.userService.findById(userSid);
+    const userId = req.user.id;
+    return this.userService.findClientUser(userId);
   }
 }

@@ -1,122 +1,155 @@
-import { TopBar, PageHeader } from "@nexus/ui";
-import { StatsSummaryCard } from "../components/StatsSummaryCard";
-import { Button, Card, CardContent, DataTable } from "@nexus/ui";
-import {
-  MdBusiness,
-  MdReportProblem,
-  MdAccessTime,
-  MdAttachMoney,
-  MdPeople,
-} from "react-icons/md";
-import { type ColumnDef } from "@tanstack/react-table";
-import { Link } from "react-router";
+import { useApiQuery } from "@/hooks/useApi";
 import Layout from "../components/Layout";
+import { Card, CardContent } from "@nexus/ui";
+import { SolutionsEngineerContactCard } from "@/components/SolutionsEngineerContactCard";
+import { Link } from "react-router";
+import { ArrowRightIcon } from "lucide-react";
 
-// Mock data for summary cards
-const summaryStats = [
-  {
-    label: "Total Workflows",
-    value: 2847,
-    icon: <MdBusiness />,
-    percentageChange: 12,
-  },
-  {
-    label: "Total Exceptions",
-    value: 156,
-    icon: <MdReportProblem />,
-    percentageChange: -8,
-  },
-  {
-    label: "Time Saved",
-    value: "1,284h",
-    icon: <MdAccessTime />,
-    percentageChange: 24,
-  },
-  {
-    label: "Revenue",
-    value: "$847K",
-    icon: <MdAttachMoney />,
-    percentageChange: 16,
-  },
-  {
-    label: "Active Clients",
-    value: 128,
-    icon: <MdPeople />,
-    percentageChange: 5,
-  },
-];
-
-// Mock data for clients table
-const clients = [
-  {
-    name: "Acme Corp",
-    contractStart: "Jan 15, 2025",
-    workflows: 24,
-    nodes: 156,
-    executions: 1847,
-    exceptions: 12,
-    revenue: "$24,500",
-    timeSaved: "284h",
-    moneySaved: "$42,600",
-  },
-];
-
-type Client = (typeof clients)[number];
-
-const columns: ColumnDef<Client, unknown>[] = [
-  {
-    accessorKey: "name",
-    header: "Client Name",
-    cell: (props) => (
-      <a className="text-primary underline cursor-pointer">
-        {props.getValue() as string}
-      </a>
-    ),
-  },
-  { accessorKey: "contractStart", header: "Contract Start" },
-  { accessorKey: "workflows", header: "Workflows" },
-  { accessorKey: "nodes", header: "Nodes" },
-  { accessorKey: "executions", header: "Executions" },
-  { accessorKey: "exceptions", header: "Exceptions" },
-  { accessorKey: "revenue", header: "Revenue" },
-  { accessorKey: "timeSaved", header: "Time Saved" },
-  { accessorKey: "moneySaved", header: "Money Saved" },
-];
+interface PipelineStep {
+  id: string;
+  label: string;
+  order: number;
+  completedAt: string | null;
+}
+interface OverviewApi {
+  assignedSEs: {
+    name: string;
+    email: string;
+    avatar?: string;
+    role?: string;
+    phone?: string;
+  }[];
+  pipeline: PipelineStep[];
+}
+interface SummaryApi {
+  timeSaved: number;
+  moneySaved: number;
+  activeWorkflows: number;
+  timeSavedAll: number;
+  moneySavedAll: number;
+}
+interface User {
+  client?: { id: string };
+}
 
 const Dashboard = () => {
+  // Fetch user info to get clientId
+  const { data: user } = useApiQuery<User>("me", "/me");
+  const clientId = user?.client?.id;
+
+  // Fetch client overview (pipeline, SE)
+  const { data: overview } = useApiQuery<OverviewApi>(
+    ["client-overview", clientId ?? "none"],
+    clientId ? `/clients/${clientId}/overview` : "",
+    { enabled: !!clientId, queryKey: ["client-overview", clientId ?? "none"] }
+  );
+
+  // Fetch client dashboard summary (stats)
+  const { data: summary } = useApiQuery<SummaryApi>(
+    ["client-summary", clientId ?? "none"],
+    clientId ? `/dashboard/client-summary?clientId=${clientId}&range=last7` : "",
+    { enabled: !!clientId, queryKey: ["client-summary", clientId ?? "none"] }
+  );
+
+  // Pipeline progress logic
+  const pipelineSteps: PipelineStep[] = overview?.pipeline || [];
+  const se = overview?.assignedSEs?.[0];
+  
+  const firstStepAfterLastCompleted = pipelineSteps.find(step => !step.completedAt);
+
   return (
     <Layout>
-          <PageHeader
-            title="Dashboard Overview"
-            description="Overview of your workflows, clients, and key metrics."
-          >
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline">Last 7 days</Button>
-              <Button variant="outline">Last 30 days</Button>
-              <Button variant="outline">MTD</Button>
-              <Button variant="outline">QTD</Button>
-              <Button variant="outline">YTD</Button>
-              <Button variant="default">ITD</Button>
+      <div className="flex gap-8 w-full">
+        {/* Pipeline Progress */}
+        <Card className="w-full md:w-1/3 max-w-xs border-none">
+          <CardContent>
+            <div className="font-semibold mb-4">Pipeline Progress</div>
+            <div className="flex flex-col gap-6">
+              {pipelineSteps.map((step) => (
+                <div key={step.id} className="flex items-center gap-3">
+                  <span
+                    className={`w-4 h-4 flex items-center justify-center rounded-full border ${
+                      step.completedAt
+                        ? "bg-[#059669] text-white border-[#059669]"
+                        : firstStepAfterLastCompleted?.id === step.id
+                          ? "bg-[#4E86CF] border-[#4E86CF]"
+                          : "bg-[#DBDBDB] border-[#DBDBDB]"
+                    }`}
+                  >
+                  </span>
+                  <div className="flex flex-col">
+                    <span>{step.label}</span>
+                    {step.completedAt && (
+                      <span className="text-xs text-muted-foreground">
+                        Completed on {new Date(step.completedAt).toLocaleDateString()}
+                      </span>
+                    )}
+                    {firstStepAfterLastCompleted?.id === step.id && (
+                      <span className="text-xs text-muted-foreground">
+                        In Progress
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
-          </PageHeader>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {summaryStats.map((stat) => (
-              <StatsSummaryCard key={stat.label} {...stat} />
-            ))}
-          </div>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">All Clients</h2>
-                <Link to="/clients/new">
-                  <Button>+ Add Client</Button>
-                </Link>
+          </CardContent>
+        </Card>
+        <div className="flex-1 flex flex-col gap-6 items-start">
+          <Card className="border-none w-full"> 
+            <CardContent className="flex flex-col gap-2">
+              <span className="text-muted-foreground">Time Saved</span>
+              <div className="flex justify-between gap-2">
+              <div className="flex flex-col gap-2">
+                <span className="text-3xl font-semibold">{summary?.timeSaved ?? "—"} hrs</span>
+                <span className="text-xs text-muted-foreground">Last 7 days</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                <span className="text-3xl font-semibold">{summary?.timeSavedAll ?? "—"} hrs</span>
+                <span className="text-xs text-muted-foreground">All time</span>
+                </div>
               </div>
-              <DataTable columns={columns} data={clients} />
             </CardContent>
           </Card>
+          <Card className="border-none w-full">
+            <CardContent className="flex flex-col gap-2">
+              <span className="text-muted-foreground">Money Saved</span>
+              <div className="flex justify-between gap-2">
+              <div className="flex flex-col gap-2">
+                <span className="text-3xl font-semibold">${summary?.moneySaved?.toLocaleString() ?? "—"}</span>
+                <span className="text-xs text-muted-foreground">Last 7 days</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                <span className="text-3xl font-semibold">${summary?.moneySavedAll?.toLocaleString() ?? "—"}</span>
+                <span className="text-xs text-muted-foreground">All time</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-none w-full">
+            <CardContent className="flex flex-col gap-2">
+              <span className="text-muted-foreground">Active Workflows</span>
+              <span className="text-3xl font-semibold">{summary?.activeWorkflows ?? "—"}</span>
+              <Link to="/workflows" className="text-xs text-[#4E86CF] flex items-center gap-1">View all workflows <ArrowRightIcon className="w-4 h-4" /></Link>
+            </CardContent>
+          </Card>
+        </div>
+        {/* SE Contact Card */}
+        <div className="w-full md:w-1/4 max-w-xs flex flex-col items-end">
+          {se && (
+            <SolutionsEngineerContactCard
+              name={se.name}
+              email={se.email}
+              avatar={se.avatar}
+              role="Solutions Engineer"
+              phone={se.phone}
+              onChat={() => {}}
+              className="w-full border-none"
+              size="lg"
+            />
+          )}
+        </div>
+      </div>
     </Layout>
   );
 };

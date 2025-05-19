@@ -1,6 +1,6 @@
 interface ExtendedRequest extends Request {
   user: {
-    sid: string;
+    id: string;
     email: string;
   };
 }
