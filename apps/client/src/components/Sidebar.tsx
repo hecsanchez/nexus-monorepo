@@ -21,9 +21,9 @@ const navItems: NavItem[] = [
   },
   {
     title: "Workflow ROI",
-    href: "/roi",
+    href: "/workflows",
     icon: <FaChartLine size={16} />,
-    bgColor: "bg-[#FAF9F8]",
+    bgColor: "bg-[#FCF6F0]",
   },
   {
     title: "Reporting",
