@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -29,11 +28,15 @@ interface User {
   costRate?: number;
   billRate?: number;
   avatar?: string;
-  assignedClients?: { id: string; name: string }[];
+  assignedClients?: { client: { id: string; name: string } }[];
 }
 
 const Users = () => {
-  const { data: users = [], isLoading, error } = useApiQuery<User[]>("users", "/users");
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useApiQuery<User[]>("users", "/users");
   const navigate = useNavigate();
   const deleteUser = useApiMutation("/users/:id", "delete", {
     onSuccess: () => window.location.reload(),
@@ -43,7 +46,11 @@ const Users = () => {
     <Layout title="User Manager">
       <div className="flex items-center justify-between pb-2">
         <div className="text-2xl">Manage Users</div>
-        <Button className="bg-black text-white h-10 text-base antialiased" size="sm" onClick={() => navigate("/users/new")}>
+        <Button
+          className="bg-black text-white h-10 text-base antialiased"
+          size="sm"
+          onClick={() => navigate("/users/new")}
+        >
           <FaPlus className="w-4 h-4 mr-2" /> Add New User
         </Button>
       </div>
@@ -69,7 +76,10 @@ const Users = () => {
               <TableBody>
                 {users.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                    <TableCell
+                      colSpan={7}
+                      className="text-center text-muted-foreground py-8"
+                    >
                       No users found.
                     </TableCell>
                   </TableRow>
@@ -90,17 +100,23 @@ const Users = () => {
                               </AvatarFallback>
                             )}
                           </Avatar>
-                          <span className="text-sm font-medium">{user.name}</span>
+                          <span className="text-sm font-medium">
+                            {user.name}
+                          </span>
                         </div>
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.phone || "-"}</TableCell>
-                      <TableCell>{user.costRate ? `$${user.costRate}/hr` : "-"}</TableCell>
-                      <TableCell>{user.billRate ? `$${user.billRate}/hr` : "-"}</TableCell>
+                      <TableCell>
+                        {user.costRate ? `$${user.costRate}/hr` : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {user.billRate ? `$${user.billRate}/hr` : "-"}
+                      </TableCell>
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
                           {user.assignedClients?.map((c) => (
-                            <Badge key={c.id} variant="secondary">
+                            <Badge key={c.client.id} variant="secondary">
                               {c.client.name}
                             </Badge>
                           ))}
@@ -121,7 +137,11 @@ const Users = () => {
                             size="icon"
                             aria-label="Delete"
                             onClick={() => {
-                              if (window.confirm("Are you sure you want to delete this user?")) {
+                              if (
+                                window.confirm(
+                                  "Are you sure you want to delete this user?"
+                                )
+                              ) {
                                 deleteUser.mutate({ id: user.id });
                               }
                             }}

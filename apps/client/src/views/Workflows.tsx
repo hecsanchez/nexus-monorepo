@@ -8,7 +8,6 @@ import {
   } from "@nexus/ui";
   import { Link } from "react-router";
   import { useApiQuery } from "@/hooks/useApi";
-  // @ts-expect-error: types may be missing for @tanstack/react-table
   import { type ColumnDef, type Row } from "@tanstack/react-table";
 import Layout from "@/components/Layout";
   

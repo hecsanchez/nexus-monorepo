@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, Input, Button } from "@nexus/ui";
 import { FaSlack, FaGithub, FaJira, FaSalesforce, FaAws } from "react-icons/fa";
 import Layout from "@/components/Layout";
@@ -13,7 +13,7 @@ const services = [
 
 const Credentials = () => {
   const [selected, setSelected] = useState(0);
-  const [form, setForm] = useState({
+  const [form] = useState({
     workspace: "acme-corp.slack.com",
     token: "xoxb-************",
     secret: "********",

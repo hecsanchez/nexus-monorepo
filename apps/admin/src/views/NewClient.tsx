@@ -24,7 +24,7 @@ import { toast } from "@nexus/ui";
 
 // Simple Checkbox wrapper
 const Checkbox = React.forwardRef<
-  HTMLInputElement,
+  HTMLButtonElement,
   React.ComponentProps<typeof CheckboxPrimitive.Root>
 >(({ children, ...props }, ref) => (
   <CheckboxPrimitive.Root
@@ -40,6 +40,9 @@ const Checkbox = React.forwardRef<
 Checkbox.displayName = "Checkbox";
 
 const departmentsInitial = [""];
+
+type UserGroup = "exceptions" | "access";
+
 
 export default function NewClient() {
   const [companyName, setCompanyName] = useState("");
@@ -86,12 +89,12 @@ export default function NewClient() {
     ]);
   const removeUser = (idx: number) =>
     setUsers(users.filter((_, i) => i !== idx));
-  const updateUser = (idx: number, field: string, value: any) => {
+  const updateUser = (idx: number, field: string, value: string) => {
     setUsers(users.map((u, i) => (i === idx ? { ...u, [field]: value } : u)));
   };
   const updateUserNested = (
     idx: number,
-    group: string,
+    group: UserGroup,
     field: string,
     value: boolean
   ) => {
@@ -170,7 +173,7 @@ export default function NewClient() {
               <Input
                 placeholder="Enter company name"
                 value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompanyName(e.target.value)}
               />
               <label className="block text-sm font-medium mt-4">
                 Company URL*
@@ -178,7 +181,7 @@ export default function NewClient() {
               <Input
                 placeholder="https://"
                 value={companyUrl}
-                onChange={(e) => setCompanyUrl(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCompanyUrl(e.target.value)}
               />
             </div>
             {/* Departments */}
@@ -192,7 +195,7 @@ export default function NewClient() {
                     <Input
                       placeholder="Department name"
                       value={dept}
-                      onChange={e => {
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const newDepts = [...departments];
                         newDepts[idx] = e.target.value;
                         setDepartments(newDepts);
@@ -242,7 +245,7 @@ export default function NewClient() {
                       <Input
                         value={user.name}
                         placeholder="Full name"
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           updateUser(idx, "name", e.target.value)
                         }
                       />
@@ -251,7 +254,7 @@ export default function NewClient() {
                       <Input
                         value={user.email}
                         placeholder="Email"
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           updateUser(idx, "email", e.target.value)
                         }
                       />
@@ -260,7 +263,7 @@ export default function NewClient() {
                       <Input
                         value={user.phone}
                         placeholder="Phone"
-                        onChange={(e) =>
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           updateUser(idx, "phone", e.target.value)
                         }
                       />
@@ -268,7 +271,7 @@ export default function NewClient() {
                     <TableCell>
                       <Select
                         value={user.department}
-                        onValueChange={(val) =>
+                        onValueChange={(val: string) =>
                           updateUser(idx, "department", val)
                         }
                       >
@@ -289,7 +292,7 @@ export default function NewClient() {
                         <label className="flex items-center gap-1 text-xs">
                           <Checkbox
                             checked={user.exceptions.email}
-                            onCheckedChange={(val) =>
+                            onCheckedChange={(val: boolean) =>
                               updateUserNested(
                                 idx,
                                 "exceptions",
@@ -303,7 +306,7 @@ export default function NewClient() {
                         <label className="flex items-center gap-1 text-xs">
                           <Checkbox
                             checked={user.exceptions.sms}
-                            onCheckedChange={(val) =>
+                            onCheckedChange={(val: boolean) =>
                               updateUserNested(idx, "exceptions", "sms", !!val)
                             }
                           />{" "}
@@ -316,7 +319,7 @@ export default function NewClient() {
                         <label className="flex items-center gap-1 text-xs">
                           <Checkbox
                             checked={user.access.billing}
-                            onCheckedChange={(val) =>
+                            onCheckedChange={(val: boolean) =>
                               updateUserNested(idx, "access", "billing", !!val)
                             }
                           />{" "}
@@ -371,7 +374,7 @@ export default function NewClient() {
                     <TableCell>
                       <Select
                         value={eng.id}
-                        onValueChange={(val) => {
+                        onValueChange={(val: string) => {
                           console.log('val', val);
                           const seObj = solutionsEngineers.find((se) => se.id === val);
                           console.log('seObj', seObj);

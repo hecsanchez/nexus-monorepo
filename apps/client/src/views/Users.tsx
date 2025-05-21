@@ -9,10 +9,9 @@ import {
   TableCell,
   Button,
   CardHeader,
-  CardTitle,
 } from "@nexus/ui";
 import Layout from "@/components/Layout";
-import { useApiQuery, useApiMutation } from "../hooks/useApi";
+import { useApiQuery } from "../hooks/useApi";
 import { useNavigate } from "react-router";
 import { FaPlus } from "react-icons/fa";
 
@@ -26,18 +25,19 @@ interface User {
   billRate?: number;
   avatar?: string;
   assignedClients?: { id: string; name: string }[];
+  client?: { id: string; name: string };
+  canBilling?: boolean;
+  isAdmin?: boolean;
+  notes?: string;
 }
 
 const Users = () => {
   const { data: user } = useApiQuery<User>("me", "/me");
-  const { data: users = [], isLoading, error } = useApiQuery<User[]>(
+  const { data: users = [] } = useApiQuery<User[]>(
     "users",
     `/clients/${user?.client?.id}/users`
   );
   const navigate = useNavigate();
-  const deleteUser = useApiMutation("/users/:id", "delete", {
-    onSuccess: () => window.location.reload(),
-  });
 
   return (
     <Layout>

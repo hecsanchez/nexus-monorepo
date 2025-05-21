@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent, Input, Button, Select, SelectTrigger, SelectContent, SelectItem } from "@nexus/ui";
 
 // Mock users

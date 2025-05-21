@@ -6,7 +6,6 @@ import {
   FaUsers,
   FaBuilding,
   FaCreditCard,
-  FaSync,
   FaComments,
   FaChartLine,
   FaExclamationTriangle,

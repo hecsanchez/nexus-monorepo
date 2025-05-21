@@ -15,4 +15,9 @@ export default defineConfig({
   server: {
     port: Number(process.env.ADMIN_PORT) || 5173,
   },
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
+  preview: {
+    port: 80,
+    strictPort: true,
+  },
 })

@@ -94,7 +94,7 @@ const columns: ColumnDef<Client, unknown>[] = [
 const Dashboard = () => {
   const [selectedRange, setSelectedRange] = useState("itd");
 
-  const { data, isLoading, isError } = useApiQuery<DashboardSummary>(
+  const { data } = useApiQuery<DashboardSummary>(
     ["dashboard-summary", selectedRange],
     `/dashboard/summary?range=${selectedRange}`
   );

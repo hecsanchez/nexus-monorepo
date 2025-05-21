@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,17 +15,21 @@ import { useNavigate } from "react-router";
 
 const pricingModels = ["Fixed", "Tiered", "Usage"];
 const apis = ["AIR Direct", "Other API"];
-const contractLengths = [{
-  label: "Month",
-  value: "30"
-}, {
-  label: "Quarter",
-  value: "90"
-}, {
-  label: "Year",
-  value: "365"
-}];
-const paymentCadences = ["Monthly","Quarterly"];
+const contractLengths = [
+  {
+    label: "Month",
+    value: "30",
+  },
+  {
+    label: "Quarter",
+    value: "90",
+  },
+  {
+    label: "Year",
+    value: "365",
+  },
+];
+const paymentCadences = ["Monthly", "Quarterly"];
 
 const NewPlan = () => {
   const [form, setForm] = useState({
@@ -65,7 +69,9 @@ const NewPlan = () => {
       overageCost: form.overage ? parseFloat(form.overage) : undefined,
       usageApi: form.api,
       creditsPerPeriod: form.credits ? parseInt(form.credits) : undefined,
-      prepaymentPercentage: form.prepayment ? parseFloat(form.prepayment) : undefined,
+      prepaymentPercentage: form.prepayment
+        ? parseFloat(form.prepayment)
+        : undefined,
     });
   };
 
@@ -79,14 +85,14 @@ const NewPlan = () => {
               <Input
                 placeholder="Enter plan name"
                 value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("name", e.target.value)}
               />
             </div>
             <div>
               <div className="mb-2 text-sm font-medium">Pricing Model</div>
               <Select
                 value={form.pricingModel}
-                onValueChange={(v) => handleChange("pricingModel", v)}
+                onValueChange={(v: string) => handleChange("pricingModel", v)}
               >
                 <SelectTrigger>{form.pricingModel}</SelectTrigger>
                 <SelectContent>
@@ -102,14 +108,14 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Credits per Period</div>
               <Input
                 value={form.credits}
-                onChange={(e) => handleChange("credits", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("credits", e.target.value)}
               />
             </div>
             <div>
               <div className="mb-2 text-sm font-medium">Price per Credit</div>
               <Input
                 value={form.pricePerCredit}
-                onChange={(e) => handleChange("pricePerCredit", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("pricePerCredit", e.target.value)}
                 prefix="$"
               />
             </div>
@@ -117,7 +123,7 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Product Usage API</div>
               <Select
                 value={form.api}
-                onValueChange={(v) => handleChange("api", v)}
+                onValueChange={(v: string) => handleChange("api", v)}
               >
                 <SelectTrigger>{form.api}</SelectTrigger>
                 <SelectContent>
@@ -133,9 +139,14 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Contract Length</div>
               <Select
                 value={form.contractLength}
-                onValueChange={(v) => handleChange("contractLength", v)}
+                onValueChange={(v: string) => handleChange("contractLength", v)}
               >
-                <SelectTrigger>{contractLengths.find(c => c.value === form.contractLength)?.label}</SelectTrigger>
+                <SelectTrigger>
+                  {
+                    contractLengths.find((c) => c.value === form.contractLength)
+                      ?.label
+                  }
+                </SelectTrigger>
                 <SelectContent>
                   {contractLengths.map((c) => (
                     <SelectItem key={c.value} value={c.value}>
@@ -149,7 +160,7 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Payment Cadence</div>
               <Select
                 value={form.paymentCadence}
-                onValueChange={(v) => handleChange("paymentCadence", v)}
+                onValueChange={(v: string) => handleChange("paymentCadence", v)}
               >
                 <SelectTrigger>{form.paymentCadence}</SelectTrigger>
                 <SelectContent>
@@ -165,7 +176,7 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Setup Fee</div>
               <Input
                 value={form.setupFee}
-                onChange={(e) => handleChange("setupFee", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("setupFee", e.target.value)}
                 prefix="$"
               />
             </div>
@@ -173,14 +184,14 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Prepayment %</div>
               <Input
                 value={form.prepayment}
-                onChange={(e) => handleChange("prepayment", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("prepayment", e.target.value)}
               />
             </div>
             <div>
               <div className="mb-2 text-sm font-medium">Cap Amount</div>
               <Input
                 value={form.cap}
-                onChange={(e) => handleChange("cap", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("cap", e.target.value)}
                 prefix="$"
               />
             </div>
@@ -188,7 +199,7 @@ const NewPlan = () => {
               <div className="mb-2 text-sm font-medium">Overage Cost</div>
               <Input
                 value={form.overage}
-                onChange={(e) => handleChange("overage", e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange("overage", e.target.value)}
                 prefix="$"
               />
             </div>
@@ -204,9 +215,9 @@ const NewPlan = () => {
             <Button
               variant="default"
               onClick={handleSubmit}
-              disabled={mutation.isLoading}
+              disabled={mutation.isPending}
             >
-              {mutation.isLoading ? "Creating..." : "Create Plan"}
+              {mutation.isPending ? "Creating..." : "Create Plan"}
             </Button>
           </div>
         </CardContent>

@@ -1,9 +1,53 @@
-import { Card, CardHeader, CardTitle, CardContent, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Button, Select, SelectTrigger, SelectContent, SelectItem } from "@nexus/ui";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@nexus/ui";
 
 const plans = [
-  { name: "Enterprise Pro", id: "enterprise", pricing: "Tiered", contract: "12 months", cadence: "Monthly", setup: "$5,000", prepay: "25%", cap: "$100,000", overage: "$150/hr", clients: 12 },
-  { name: "Business Plus", id: "business", pricing: "Fixed", contract: "6 months", cadence: "Quarterly", setup: "$2,500", prepay: "15%", cap: "$50,000", overage: "$125/hr", clients: 28 },
-  { name: "Starter", id: "starter", pricing: "Usage", contract: "3 months", cadence: "Monthly", setup: "$1,000", prepay: "10%", cap: "$25,000", overage: "$100/hr", clients: 45 },
+  {
+    name: "Enterprise Pro",
+    id: "enterprise",
+    pricing: "Tiered",
+    contract: "12 months",
+    cadence: "Monthly",
+    setup: "$5,000",
+    prepay: "25%",
+    cap: "$100,000",
+    overage: "$150/hr",
+    clients: 12,
+  },
+  {
+    name: "Business Plus",
+    id: "business",
+    pricing: "Fixed",
+    contract: "6 months",
+    cadence: "Quarterly",
+    setup: "$2,500",
+    prepay: "15%",
+    cap: "$50,000",
+    overage: "$125/hr",
+    clients: 28,
+  },
+  {
+    name: "Starter",
+    id: "starter",
+    pricing: "Usage",
+    contract: "3 months",
+    cadence: "Monthly",
+    setup: "$1,000",
+    prepay: "10%",
+    cap: "$25,000",
+    overage: "$100/hr",
+    clients: 45,
+  },
 ];
 
 const PlanManagerTab = () => {
@@ -48,4 +92,4 @@ const PlanManagerTab = () => {
   );
 };
 
-export default PlanManagerTab; 
+export default PlanManagerTab;

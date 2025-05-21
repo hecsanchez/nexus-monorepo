@@ -46,7 +46,7 @@ function PaymentMethodForm({
   }>(
     ["setup-intent", clientId],
     `/billing/clients/${clientId}/stripe/setup-intent`,
-    { enabled: !!clientId }
+    { enabled: !!clientId, queryKey: ["setup-intent", clientId] }
   );
 
   // Attach payment method mutation
@@ -59,9 +59,10 @@ function PaymentMethodForm({
         setError(null);
         onSuccess();
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
+        const errorMessage = err instanceof Error ? err.message : "Failed to save payment method";
         setLoading(false);
-        setError(err?.message || "Failed to save payment method");
+        setError(errorMessage);
       },
     }
   );

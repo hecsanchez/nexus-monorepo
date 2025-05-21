@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,24 +14,12 @@ import {
 } from "@nexus/ui";
 import Layout from "@/components/Layout";
 import { useApiQuery, useApiMutation } from "../hooks/useApi";
-// @ts-expect-error: types may be missing for @tanstack/react-table
 import { type ColumnDef, type Row } from "@tanstack/react-table";
 
 const statusOptions = [
   { label: "New", value: "OPEN" },
   { label: "In Progress", value: "IN_PROGRESS" },
   { label: "Resolved", value: "RESOLVED" },
-];
-const severityOptions = [
-  { label: "All severities", value: "ALL" },
-  { label: "Critical", value: "CRITICAL" },
-  { label: "High", value: "HIGH" },
-  { label: "Medium", value: "MEDIUM" },
-  { label: "Low", value: "LOW" },
-];
-const typeOptions = [
-  { label: "All types", value: "ALL" },
-  { label: "Integration", value: "Integration" },
 ];
 
 interface Exception {

@@ -60,9 +60,9 @@ const Login: React.FC = () => {
         <button
           type="submit"
           className="w-full bg-black text-white py-2 rounded font-semibold"
-          disabled={loginMutation.isLoading}
+          disabled={loginMutation.isPending}
         >
-          {loginMutation.isLoading ? "Logging in..." : "Login"}
+          {loginMutation.isPending ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

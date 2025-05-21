@@ -9,6 +9,7 @@ interface User {
   name: string;
   email: string;
   assignedClients?: { clientId: string }[];
+  client?: Client;
 }
 interface Client {
   id: string;

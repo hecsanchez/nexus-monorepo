@@ -21,6 +21,11 @@ import Layout from "@/components/Layout";
 import { useApiQuery, useApiMutation } from "../hooks/useApi";
 import { type ColumnDef, type Row } from "@tanstack/react-table";
 
+interface Client {
+  id: string;
+  name: string;
+}
+
 const statusOptions = [
   { label: "New", value: "OPEN" },
   { label: "In Progress", value: "IN_PROGRESS" },
@@ -122,7 +127,7 @@ const columns: ColumnDef<Exception>[] = [
 
 function ExceptionStatusDropdown({ exception }: { exception: Exception }) {
   const { refetch } = useApiQuery<Exception[]>(["exceptions"], "/exceptions");
-  const updateStatus = useApiMutation<any, { id: string; status: string }>(
+  const updateStatus = useApiMutation<Exception, { id: string; status: string }>(
     "/exceptions/:id",
     "patch",
     {
@@ -152,7 +157,7 @@ function ExceptionStatusDropdown({ exception }: { exception: Exception }) {
 
 const Exceptions = () => {
   // Fetch clients for filter
-  const { data: clients = [] } = useApiQuery<any[]>("clients", "/clients");
+  const { data: clients = [] } = useApiQuery<Client[]>("clients", "/clients");
   // Filter state
   const [client, setClient] = useState("");
   const [type, setType] = useState("");
@@ -161,7 +166,6 @@ const Exceptions = () => {
   // Fetch exceptions with filters
   const {
     data: exceptions = [],
-    refetch,
     isLoading,
   } = useApiQuery<Exception[]>(
     ["exceptions", client, type, severity],
